@@ -50,5 +50,11 @@ public class Post {
     public void dislike() {
         this._dislikes++;
     }
+    public void setOwner(Profile owner) {
+        this._owner = owner;
+    }
+    public Profile getOwner() {
+        return this._owner;
+    }
 
 }
