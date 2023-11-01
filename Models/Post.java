@@ -9,7 +9,7 @@ public class Post {
     private Integer _dislikes = 0;
     private LocalDateTime _createdTime;
     private Profile _owner;
-
+    
     public Post(String _id, String _text, Profile _owner) {
         this._id = _id;
         this._text = _text;
@@ -43,6 +43,14 @@ public class Post {
         return this._dislikes;
     }
 
+    public void setOwner(Profile owner) {
+        this._owner = owner;
+    }
+
+    public Profile getOwner() {
+        return this._owner;
+    }
+
     public void like() {
         this._likes++;
     }
@@ -50,11 +58,6 @@ public class Post {
     public void dislike() {
         this._dislikes++;
     }
-    public void setOwner(Profile owner) {
-        this._owner = owner;
-    }
-    public Profile getOwner() {
-        return this._owner;
-    }
+    
 
 }

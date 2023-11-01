@@ -1,34 +1,34 @@
 package Models;
 
 public class Profile {
-    private Integer id;
-    private String name;
-    private String email;
+    private Integer _id;
+    private String _name;
+    private String _email;
 
     public Profile(Integer _id, String _name, String _email) {
-        this.id = _id;
-        this.name = _name;
-        this.email = _email;
+        this._id = _id;
+        this._name = _name;
+        this._email = _email;
     }
 
     public Integer getId() {
-        return this.id;
+        return this._id;
     }
 
     public String getName() {
-        return this.name;
+        return this._name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this._name = name;
     }
 
     public String getEmail() {
-        return this.email;
+        return this._email;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this._email = email;
     }
 
 }

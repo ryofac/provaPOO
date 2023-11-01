@@ -7,7 +7,7 @@ import Models.Profile;
 public class ProfileRepository {
     private ArrayList<Profile> profiles = new ArrayList<Profile>();
 
-    public Profile findProfileById(String id) {
+    public Profile findProfileById(Integer id) {
         for (Profile profile : profiles) {
             if (profile.getId().equals(id)) {
                 return profile;
@@ -34,8 +34,7 @@ public class ProfileRepository {
 
     public void includeProfile(Profile profile) {
         profiles.add(profile);
-    }
+    }    
 
-    
     
 }
