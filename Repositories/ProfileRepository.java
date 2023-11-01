@@ -1,40 +1,48 @@
 package Repositories;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import Models.Profile;
 
 public class ProfileRepository {
-    private ArrayList<Profile> profiles = new ArrayList<Profile>();
+    private List<Profile> profiles = new ArrayList<Profile>();
 
-    public Profile findProfileById(Integer id) {
+    public Optional<Profile> findProfileById(Integer id) {
         for (Profile profile : profiles) {
-            if (profile.getId().equals(id)) {
-                return profile;
+            if (profile.getId() == id) {
+                return Optional.of(profile);
             }
         }
-        return null;
+        return Optional.empty();
     }
-    public Profile findProfileByName(String name) {
-        for (Profile profile : profiles) {  
+
+    public Optional<Profile> findProfileByName(String name) {
+        for (Profile profile : profiles) {
             if (profile.getName().equals(name)) {
-                return profile;
+                return Optional.of(profile);
             }
         }
-        return null;
+        return Optional.empty();
     }
-    public Profile findProfileByEmail(String email) {
+
+    public Optional<Profile> findProfileByEmail(String email) {
         for (Profile profile : profiles) {
             if (profile.getEmail().equals(email)) {
-                return profile;
+                return Optional.of(profile);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    public void includeProfile(Profile profile) {
+    public Boolean addProfile(Profile profile) {
+        Optional<Profile> equalProfile = findProfileById(profile.getId());
+        if (equalProfile.isPresent()) {
+            return false;
+        }
         profiles.add(profile);
-    }    
+        return true;
+    }
 
-    
 }

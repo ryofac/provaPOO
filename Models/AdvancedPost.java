@@ -6,7 +6,7 @@ public class AdvancedPost extends Post {
     ArrayList<String> hashtags = new ArrayList<String>();
     Double remainingViews;
 
-    public AdvancedPost(String _id, String _text, Profile _owner, Double remainingViews) {
+    public AdvancedPost(Integer _id, String _text, Profile _owner, Double remainingViews) {
         super(_id, _text, _owner);
         this.remainingViews = remainingViews;
 
