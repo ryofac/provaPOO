@@ -115,14 +115,21 @@ public class SocialNetwork {
     public void showPostsPerProfile(Profile owner) throws NotFoundException {
         List<Post> postsFounded = postRepository.findPostByOwner(owner);
         if (postsFounded.size() == 0) {
-            throw new NotFoundException("Posts not founded!");
+            throw new NotFoundException("Posts with this owner does not exist");
         }
         for (Post actualPost : postsFounded) {
             System.out.println(actualPost.toString());
         }
     }
 
-    public void showPostsPerHashtag() {
+    public void showPostsPerHashtag(String hashtag) throws NotFoundException {
+        List<Post> postsFounded = postRepository.findPostByHashtag(hashtag);
+        if(postsFounded.size() == 0){
+            throw new NotFoundException("Posts with this hashtag does not exist");
+        }
+        for(Post post: postsFounded){
+            System.out.println(post.toString());
+        }
 
     }
 

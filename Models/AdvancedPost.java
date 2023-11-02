@@ -1,7 +1,6 @@
 package Models;
 
 import java.util.ArrayList;
-
 public class AdvancedPost extends Post {
     ArrayList<String> hashtags = new ArrayList<String>();
     Double remainingViews;
