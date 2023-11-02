@@ -111,4 +111,19 @@ public class SocialNetwork {
         post.dislike();
 
     }
+
+    public void showPostsPerProfile(Profile owner) throws NotFoundException {
+        List<Post> postsFounded = postRepository.findPostByOwner(owner);
+        if (postsFounded.size() == 0) {
+            throw new NotFoundException("Posts not founded!");
+        }
+        for (Post actualPost : postsFounded) {
+            System.out.println(actualPost.toString());
+        }
+    }
+
+    public void showPostsPerHashtag() {
+
+    }
+
 }

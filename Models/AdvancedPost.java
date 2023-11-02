@@ -40,4 +40,9 @@ public class AdvancedPost extends Post {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

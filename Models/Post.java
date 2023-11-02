@@ -50,4 +50,10 @@ public class Post {
         return this._createdTime;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%d : %s : %s : %s", this._id, this._createdTime.toString(), this._owner.getName(),
+                this._likes);
+    }
+
 }
