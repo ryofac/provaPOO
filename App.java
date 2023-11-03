@@ -14,7 +14,7 @@ public class App {
     String menu() {
         return ("Choose a option:" +
         "\n====================================" +
-        "1 - Include Profile\t 2 -Find Profile By Id\t 3 - Find Profile By Email\t 4 - Find Profile By Name");
+        "1 - Include Profile\t 2 -Find Profile By Id\t 3 - Find Profile By Email\t 4 - Find Profile By Name\t 5 -");
         
     }
     
