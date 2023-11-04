@@ -12,7 +12,7 @@ import Repositories.PostRepository;
 public class SocialNetwork {
     private ProfileRepository profileRepository;
     private PostRepository postRepository;
-
+  
     public SocialNetwork(ProfileRepository profileRepository, PostRepository postRepository) {
         this.profileRepository = profileRepository;
         this.postRepository = postRepository;
@@ -61,35 +61,50 @@ public class SocialNetwork {
         throw new NotFoundException("Profile with this name not founded!");
     }
 
-    public List<Post> findPostsbyOwner(Profile owner) {
-        return postRepository.findPostByOwner(owner);
+    public List<Post> findPostsbyOwner(Profile owner) throws NotFoundException {
+      List<Post> postsFounded = postRepository.findPostByOwner(owner);
+        if(postsFounded.size() == 0){
+            throw new NotFoundException("Posts with this hashtag does not exist");
+        }
+        return postsFounded;
 
     }
 
-    public Optional<Post> findPostsbyId(Integer id) {
-        return postRepository.findPostById(id);
+    public Post findPostsbyId(Integer id) throws NotFoundException {
+        Optional<Post> postFounded = postRepository.findPostById(id);
+        if(postFounded.isEmpty()){
+            throw new NotFoundException("This post does not exist");
+        }
+        return postFounded.get();
 
     }
 
-    public List<Post> findPostByHashtag(String hashtag) {
-        return postRepository.findPostByHashtag(hashtag);
+    public List<Post> findPostByHashtag(String hashtag) throws NotFoundException{
+        List<Post> postFounded = postRepository.findPostByHashtag(hashtag);
+        if(postFounded.isEmpty()){
+            throw new NotFoundException("This post does not exist");
+        }
+        return postFounded;
     }
 
     public void like(Integer idPost) throws NotFoundException {
-        Optional<Post> founded = this.findPostsbyId(idPost);
-        if (founded.isEmpty()) {
-            throw new NotFoundException("This post doesn't exist!");
+        try{
+            Post founded = this.findPostsbyId(idPost);
+            founded.like();
+        } catch (NotFoundException e){
+            throw e;
         }
-        founded.get().like();
+       
 
     }
 
     public void dislike(Integer idPost) throws NotFoundException {
-        Optional<Post> founded = postRepository.findPostById(idPost);
-        if (founded.isEmpty()) {
-            throw new NotFoundException("This post doesn't exist!");
+        try{
+            Post founded = this.findPostsbyId(idPost);
+            founded.dislike();
+        } catch (NotFoundException e){
+            throw e;
         }
-        founded.get().dislike();
 
     }
 
@@ -126,6 +141,28 @@ public class SocialNetwork {
             System.out.println(post.toString());
         }
 
+    }
+    public List<Post> getAllPosts(){
+        return postRepository.getAllPosts();
+
+    }
+
+    public List<Post> findPostByText(String text) throws NotFoundException{
+        List<Post> postsFounded = postRepository.findPostByText(text);
+        if(postsFounded.size() == 0){
+            throw new NotFoundException("Posts with this text does not exist");
+        }
+        return postsFounded;
+    }
+
+    public void includePost(Post post){
+        postRepository.includePost(post);
+    }
+
+    public void showAllPosts(){
+        for(Post post: postRepository.getAllPosts()){
+            System.out.println(post);
+        }
     }
 
 }

@@ -12,10 +12,15 @@ import Models.Profile;
 /*
  * Stores and handle the posts data
  */
+
+ // @TODO: Descobrir porque as Streams tão fechando e bugando as pesquisas por Posts
 public class PostRepository {
     private List<Post> posts = new ArrayList<Post>();
-
     private Stream<Post> postsStream = posts.stream();
+    
+    public List<Post> getAllPosts(){
+        return posts;
+    }
 
     public Optional<Post> findPostById(Integer id) {
         Stream<Post> postsFinded = postsStream.filter(post -> post.getId() == id);
@@ -23,8 +28,13 @@ public class PostRepository {
     }
 
     public List<Post> findPostByText(String text) {
-        Stream<Post> postsFinded = postsStream.filter(post -> post.getText().contains(text));
-        return postsFinded.collect(Collectors.toList());
+        List<Post> founded = new ArrayList<>();
+        for(Post post : posts){
+            if(post.getText().contains(text)){
+                founded.add(post);
+            }
+        }
+        return founded;
     }
 
     public List<Post> findPostByOwner(Profile owner) {
