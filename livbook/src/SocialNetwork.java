@@ -71,11 +71,6 @@ public class SocialNetwork {
 
     }
 
-    public List<Post> findPostsby(Profile owner) {
-        return postRepository.findPostByOwner(owner);
-
-    }
-
     public List<Post> findPostByHashtag(String hashtag) {
         return postRepository.findPostByHashtag(hashtag);
     }

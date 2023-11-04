@@ -33,7 +33,8 @@ public class App {
 
     private Option[] options = {
         new Option("Create profile",  none -> {includeProfile();}),
-        new Option("Search Profile", none -> {searchProfile();})
+        new Option("Search Profile", none -> {searchProfile();}),
+        new Option("Find post", none -> {})
     };
 
     private void showMenu(Option...options){
@@ -50,14 +51,14 @@ public class App {
             socialNetwork.includeProfile(new Profile(name, email));
             System.out.println("Usuário criado com sucesso");
         }catch(AlreadyExistsException e){
-            System.out.println(e.getMessage());
+            System.out.println("CANNOT CREATE USER: " + e.getMessage());
             return;
         } catch(Exception e){
             System.out.println("Ocorreu um erro...");
             e.printStackTrace();
         }
     }
-
+    //TODO: Talvez seja bom retornar a profile achada ( se achada ), para reuso em outros métodos
     private void searchProfile(){
         String searchTerm = IOUtils.getText("Enter the search term : [email/username]").toLowerCase().trim();
         try{
@@ -76,19 +77,37 @@ public class App {
 
     }
 
+    //TODO: Terminar de criar o método para pesquisar em todas as opções (perfil, parte do post e hashtag)
+    private void searchPost(){
+        String searchTerm = IOUtils.getText("Enter the search parameter: [profile/phrase/hashtag]").toLowerCase().trim();
+
+    }
+
     public void run(){
-        //TODO: Fazer com que o menu dependa somente das opções (No caso de não exibir opções não disponíveis)
-        do{
-            showMenu(options);
-            switch (sc.nextInt()) {
-                case 1:
-                    options[0].callback.accept(null);
+        Integer chosen;
+        while (true) { // TODO: Analisar se é uma boa continuar com esse while true
+             showMenu(options);
+            // Controla a opção escolhida atual: entrada de dados do programa
+            try{
+                chosen = IOUtils.getInt("Enter a option: ");
+
+                // verifica se é maior ou menor que o número de conteúdos da lista, senão for, continua...
+                if(chosen > options.length || chosen < 0){
+                    System.out.println("Please, digit a valid option number!");
+                    continue;
+                }
+                if(chosen == 0){ // Opção sair: termina o loop
                     break;
-                case 2:
-                    options[1].callback.accept(null);
-                    break; 
+                }
+                // Escolhe a opção pelo que foi digitado - 1 (o indice real do array)
+                options[chosen - 1].callback.accept(null);
+                IOUtils.clearScreen();
             }
-        }while( sc.nextInt() != 0);
+            catch(NumberFormatException e){
+                System.out.println("Enter only numbers, please!");
+            }
+            
+        }
 
         IOUtils.closeScanner(); // TODO: Achar um método mais "bonito" de fazer isso"
 
@@ -96,7 +115,6 @@ public class App {
 
     public static void main(String[] args) {
         SocialNetwork socialNetwork = new SocialNetwork(new ProfileRepository(), new PostRepository());
-        //TODO: concertar scanner pedindo mais de uma linha no looping principal
         App app = new App(socialNetwork, new Scanner(System.in));
         app.run();
     }
