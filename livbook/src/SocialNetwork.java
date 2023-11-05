@@ -106,9 +106,18 @@ public class SocialNetwork {
         }
     }
 
-    public void showPost(Post post) {
-        String toBePrintedd = String.format("%s - at %s \n =-=-=-=-=- \n %s \n=-=-=-==-=-=\n %d - likes %d -dislikes ");
-        System.out.println(toBePrintedd);
+    // Usado para formatar os posts no formato adequado
+    public String formatPost(Post post) {
+        String formated = String.format("-----------------------\n<%s> \t%s - at %s \n\t%s \n -------------------- \n %d - likes %d - dislikes\n", 
+            post.getId(), post.getOwner().getName(), post.getCreatedTime(), post.getText(), post.getLikes(), post.getDislikes());
+        if(post instanceof AdvancedPost){
+            formated += String.format("\t(%d - views remaining)\n hashtags:", ((AdvancedPost) post).getRemainingViews());
+            for(String hashtag : ((AdvancedPost) post).getHashtags()){
+                formated += " " + hashtag;
+
+            }
+        }
+        return formated;
     }
 
     public void decrementViews(Integer idPost) throws NotFoundException {
@@ -130,19 +139,20 @@ public class SocialNetwork {
         if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this owner does not exist");
         }
+        System.out.println("==== Founded by hashtag: ====");
         for (Post actualPost : postsFounded) {
-            System.out.println(actualPost.toString());
+            System.out.println(formatPost(actualPost));
         }
     }
 
-    public void showPostsPerHashtag(String hashtag) throws NotFoundException
-
-          
+    public void showPostsPerHashtag(String hashtag) throws NotFoundException{
+        List<Post> postsFounded = postRepository.findPostByHashtag(hashtag);
         if(postsFounded.size() == 0){
             throw new NotFoundException("Posts with this hashtag does not exist");
-        }   
+        }
+        System.out.println("==== Founded by hashtag: ====");
         for(Post post: postsFounded){
-            System.out.println(post.toString());
+            System.out.println(formatPost(post));
         }
 
 
@@ -157,11 +167,9 @@ public class SocialNetwork {
         postRepository.includePost(post);
     }
 
-    public  void showA
-
-    llPosts(){ 
+    public void showAllPosts(){ 
         for(Post post: postRepository.getAllPosts()){
-            System.out.println(post);
+            System.out.println(formatPost(post));
         }
     }
 
@@ -170,11 +178,8 @@ public class SocialNetwork {
         if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this profile does not exist");
         }
-     
-
-    
-        c List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
-         L ist<Post> postsFounded = p ostRepository.findPostByPhrase(searchTerm);
+        List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
+        List<Post> postsFounded = postRepository.findPostByPhrase(searchTerm);
         if(postsFounded.size() == 0){
             throw new NotFoundException("Posts with this word in text does not exist");
         }

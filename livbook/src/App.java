@@ -127,18 +127,16 @@ public class App {
 
     private void createPost() {
         System.out.println("Autenticate...");
-        var name = IOUtils.getText("Enter your name: ");
-        var email = IOUtils.getText("Enter your email: ");
+        String name = IOUtils.getText("Enter your name: ");
+        String email = IOUtils.getText("Enter your email: ");
         try {
-            var foundedByEmail = socialNetwork.findProfileByEmail(email);
-            var foundedByName = socialNetwork.findProfileByName(name);
+            Profile foundedByEmail = socialNetwork.findProfileByEmail(email);
+            Profile foundedByName = socialNetwork.findProfileByName(name);
             if (foundedByEmail != foundedByName) {
                 System.out.println("Autentication failed!");
                 return;
             }
-
             String text = IOUtils.getTextNormalized("What do you want to share with world today? \n > ");
-
             List<String> hashtagsFounded = findHashtagInText(text);
             if (hashtagsFounded.size() > 0)
                 System.out.println("Warn: you can only embed hashtags in a advanced post");
@@ -152,7 +150,6 @@ public class App {
                 created = new Post(null, text, foundedByEmail);
 
             }
-
             // hashtags vão ser adcionadas a medida que são encontradas no próprio texto
             for (String hashtag : hashtagsFounded) {
                 created.setText(text.replace(hashtag, " "));
@@ -171,15 +168,10 @@ public class App {
     }
 
     private void searchPost() {
-        String searchTerm = IOUtils
-                .getTextNormalized("Enter the search parameter: [profile username/phrase/hashtag]\n > ");
+        String searchTerm = IOUtils.getTextNormalized("Enter the search parameter: [profile username/phrase/hashtag]\n > ");
         try {
             Profile userFoundedByName = socialNetwork.findProfileByName(searchTerm);
-            List<Post> postsFoundedByUser = socialNetwork.findPostsbyOwner(userFoundedByName);
-            System.out.println("====== Founded by user: ======= ");
-            for (Post post : postsFoundedByUser) {
-                System.out.println(post);
-            }
+            socialNetwork.showPostsPerProfile(userFoundedByName);
         } catch (NotFoundException e) {
             System.out.println("No posts founded by user");
         }
@@ -194,11 +186,7 @@ public class App {
             System.out.println("No posts founded by text");
         }
         try {
-            List<Post> postsFoundedByHashtag = socialNetwork.findPostByHashtag(searchTerm);
-            System.out.println("====== Founded by hashtag: ======= ");
-            for (Post post : postsFoundedByHashtag) {
-                System.out.println(post);
-            }
+            socialNetwork.showPostsPerHashtag(searchTerm);
         } catch (NotFoundException err) {
             System.out.println("No posts founded by hashtag");
         }
@@ -230,8 +218,7 @@ public class App {
 
     public void run() {
         Integer chosen;
-        while (true) { // TODO: Analisar se é uma boa continuar com esse while true (acho que está bom
-                       // assim)
+        while (true) {
             showMenu(options);
             // Controla a opção escolhida atual: entrada de dados do programa
             try {
