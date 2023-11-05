@@ -57,4 +57,16 @@ public class PostRepository {
         posts.add(post);
     }
 
+    public List<Post> findPostByProfile(String searchTerm) {
+        Stream<Post> postsFinded = postsStream.filter(post -> post.getOwner().getName().equals(searchTerm));
+        return postsFinded.collect(Collectors.toList());
+
+        
+    }
+
+    public List<Post> findPostByHashtagInText(String searchTerm) {
+        Stream<Post> postsFinded = postsStream.filter(post -> post.getText().contains(searchTerm));
+        return postsFinded.collect(Collectors.toList());
+    }
+
 }

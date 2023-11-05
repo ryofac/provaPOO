@@ -68,6 +68,7 @@ public class App {
             e.printStackTrace();
         }
     }
+
     //TODO: Talvez seja bom retornar a profile achada ( se achada ), para reuso em outros métodos
     private void searchProfile(){
         String searchTerm = IOUtils.getTextNormalized("Enter the search term : [email/username] \n> ");
@@ -133,6 +134,8 @@ public class App {
         } catch(NotFoundException e){
             System.out.println("No posts founded by text");
         }
+        
+        
         try{
             List<Post> postsFoundedByHashtag = socialNetwork.findPostByHashtag(searchTerm);
             System.out.println("Founded by hashtag: ");
@@ -142,15 +145,32 @@ public class App {
         } catch(NotFoundException err){
             System.out.println("No posts founded by hashtag");
         }
-        
 
-
-
+        //nao sei se vai ser util, mas ta ai
+        try{
+            List<Post> postsFoundedByHashtagInText = socialNetwork.findPostByHashtagInText(searchTerm);
+            System.out.println("Founded by hashtag in text: ");
+            for (Post post : postsFoundedByHashtagInText) {
+                System.out.println(post);
+            }
+        } catch(NotFoundException err){
+            System.out.println("No posts founded by hashtag in text");
+        }
+        //implementar nas opções de menu
+        try{
+            List<Post> postsFoundedByPhrase = socialNetwork.findPostByPhrase(searchTerm);
+            System.out.println("Founded by phrase: ");          
+            for (Post post : postsFoundedByPhrase) {
+                System.out.println(post);
+            }
+        } catch(NotFoundException err){
+            System.out.println("No posts founded by phrase");
+        }
     }
 
     public void run(){
         Integer chosen;
-        while (true) { // TODO: Analisar se é uma boa continuar com esse while true
+        while (true) { // TODO: Analisar se é uma boa continuar com esse while true (acho que está bom assim)
              showMenu(options);
             // Controla a opção escolhida atual: entrada de dados do programa
             try{
