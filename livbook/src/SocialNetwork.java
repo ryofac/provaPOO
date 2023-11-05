@@ -12,7 +12,7 @@ import Repositories.PostRepository;
 public class SocialNetwork {
     private ProfileRepository profileRepository;
     private PostRepository postRepository;
-  
+
     public SocialNetwork(ProfileRepository profileRepository, PostRepository postRepository) {
         this.profileRepository = profileRepository;
         this.postRepository = postRepository;
@@ -62,8 +62,8 @@ public class SocialNetwork {
     }
 
     public List<Post> findPostsbyOwner(Profile owner) throws NotFoundException {
-      List<Post> postsFounded = postRepository.findPostByOwner(owner);
-        if(postsFounded.size() == 0){
+        List<Post> postsFounded = postRepository.findPostByOwner(owner);
+        if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this hashtag does not exist");
         }
         return postsFounded;
@@ -72,40 +72,43 @@ public class SocialNetwork {
 
     public Post findPostsbyId(Integer id) throws NotFoundException {
         Optional<Post> postFounded = postRepository.findPostById(id);
-        if(postFounded.isEmpty()){
+        if (postFounded.isEmpty()) {
             throw new NotFoundException("This post does not exist");
         }
         return postFounded.get();
 
     }
 
-    public List<Post> findPostByHashtag(String hashtag) throws NotFoundException{
+    public List<Post> findPostByHashtag(String hashtag) throws NotFoundException {
         List<Post> postFounded = postRepository.findPostByHashtag(hashtag);
-        if(postFounded.isEmpty()){
+        if (postFounded.isEmpty()) {
             throw new NotFoundException("This post does not exist");
         }
         return postFounded;
     }
 
     public void like(Integer idPost) throws NotFoundException {
-        try{
+        try {
             Post founded = this.findPostsbyId(idPost);
             founded.like();
-        } catch (NotFoundException e){
+        } catch (NotFoundException e) {
             throw e;
         }
-       
 
     }
 
     public void dislike(Integer idPost) throws NotFoundException {
-        try{
+        try {
             Post founded = this.findPostsbyId(idPost);
             founded.dislike();
-        } catch (NotFoundException e){
+        } catch (NotFoundException e) {
             throw e;
         }
+    }
 
+    public void showPost(Post post) {
+        String toBePrintedd = String.format("%s - at %s \n =-=-=-=-=- \n %s \n=-=-=-==-=-=\n %d - likes %d -dislikes ");
+        System.out.println(toBePrintedd);
     }
 
     public void decrementViews(Integer idPost) throws NotFoundException {
@@ -132,34 +135,31 @@ public class SocialNetwork {
         }
     }
 
-    public void showPostsPerHashtag(String hashtag) throws NotFoundException {
-        List<Post> postsFounded = postRepository.findPostByHashtag(hashtag);
+    public void showPostsPerHashtag(String hashtag) throws NotFoundException
+
+          
         if(postsFounded.size() == 0){
             throw new NotFoundException("Posts with this hashtag does not exist");
-        }
+        }   
         for(Post post: postsFounded){
             System.out.println(post.toString());
         }
 
+
     }
-    public List<Post> getAllPosts(){
+
+    public List<Post> getAllPosts() {
         return postRepository.getAllPosts();
 
     }
 
-    public List<Post> findPostByText(String text) throws NotFoundException{
-        List<Post> postsFounded = postRepository.findPostByText(text);
-        if(postsFounded.size() == 0){
-            throw new NotFoundException("Posts with this text does not exist");
-        }
-        return postsFounded;
-    }
-
-    public void includePost(Post post){
+    public void includePost(Post post) {
         postRepository.includePost(post);
     }
 
-    public void showAllPosts(){
+    public  void showA
+
+    llPosts(){ 
         for(Post post: postRepository.getAllPosts()){
             System.out.println(post);
         }
@@ -167,18 +167,14 @@ public class SocialNetwork {
 
     public List<Post> findPostByProfile(String searchTerm) throws NotFoundException {
         List<Post> postsFounded = postRepository.findPostByProfile(searchTerm);
-        if(postsFounded.size() == 0){
+        if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this profile does not exist");
         }
-        return postsFounded;
-    }
+     
 
-    // public List<Post> findPostByHashtagInText(String searchTerm) throws NotFoundException {
-       
-    // }
-
-    public List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
-         List<Post> postsFounded = postRepository.findPostByPhrase(searchTerm);
+    
+        c List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
+         L ist<Post> postsFounded = p ostRepository.findPostByPhrase(searchTerm);
         if(postsFounded.size() == 0){
             throw new NotFoundException("Posts with this word in text does not exist");
         }

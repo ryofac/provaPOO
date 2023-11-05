@@ -13,11 +13,11 @@ import Models.Profile;
  * Stores and handle the posts data
  */
 
- // @TODO: Descobrir porque as Streams tão fechando e bugando as pesquisas por Posts
+// @TODO: Descobrir porque as Streams tão fechando e bugando as pesquisas por Posts
 public class PostRepository {
-    private List<Post> posts = new ArrayList<Post>(); 
-    
-    public List<Post> getAllPosts(){
+    private List<Post> posts = new ArrayList<Post>();
+
+    public List<Post> getAllPosts() {
         return posts;
     }
 
@@ -25,16 +25,6 @@ public class PostRepository {
         Stream<Post> postsStream = posts.stream();
         Stream<Post> postsFinded = postsStream.filter(post -> post.getId() == id);
         return postsFinded.findFirst();
-    }
-
-    public List<Post> findPostByText(String text) {
-        List<Post> founded = new ArrayList<>();
-        for(Post post : posts){
-            if(post.getText().contains(text)){
-                founded.add(post);
-            }
-        }
-        return founded;
     }
 
     public List<Post> findPostByOwner(Profile owner) {
@@ -64,7 +54,6 @@ public class PostRepository {
         Stream<Post> postsFinded = postsStream.filter(post -> post.getOwner().getName().equals(searchTerm));
         return postsFinded.collect(Collectors.toList());
 
-        
     }
 
     public List<Post> findPostByPhrase(String searchTerm) {
