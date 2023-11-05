@@ -59,10 +59,5 @@ public class Post {
         return this._createdTime;
     }
 
-    @Override
-    public String toString() {
-        return String.format("==============\n %s - posted at %s \n================\n %s \n %d-likes %d-dislikes \n =-=-=-=-=-=-=-", 
-        getOwner(),  getCreatedTime(), getText(), getLikes(), getDislikes());
-        }
-    }
-
+    
+}

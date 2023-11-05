@@ -1,5 +1,6 @@
 import Repositories.ProfileRepository;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import Exceptions.AlreadyExistsException;
@@ -16,6 +17,23 @@ public class SocialNetwork {
     public SocialNetwork(ProfileRepository profileRepository, PostRepository postRepository) {
         this.profileRepository = profileRepository;
         this.postRepository = postRepository;
+    }
+
+    public Profile createProfile(String username, String email){
+        Integer id = profileRepository.getProfileAmount() + 1;
+        return new Profile(id, username, email);
+    }
+    
+    public Post createPost(String text, Profile owner){
+        Integer id = postRepository.getPostAmount() + 1;
+        return new Post(id, text, owner);
+
+    }
+
+    public AdvancedPost createAdvancedPost(String text, Profile owner, Integer remainingViews){
+        Integer id = postRepository.getPostAmount() + 1;
+        return new AdvancedPost(id, text, owner, remainingViews);
+
     }
 
     public void includeProfile(Profile profile) throws AlreadyExistsException {
@@ -109,7 +127,7 @@ public class SocialNetwork {
     // Usado para formatar os posts no formato adequado
     public String formatPost(Post post) {
         String formated = String.format("-----------------------\n<%s> \t%s - at %s \n\t%s \n -------------------- \n %d - likes %d - dislikes\n", 
-            post.getId(), post.getOwner().getName(), post.getCreatedTime(), post.getText(), post.getLikes(), post.getDislikes());
+            post.getId(), post.getOwner().getName(), post.getCreatedTime().format(DateTimeFormatter.ofPattern("dd/MM (E): HH:mm")), post.getText(), post.getLikes(), post.getDislikes());
         if(post instanceof AdvancedPost){
             formated += String.format("\t(%d - views remaining)\n hashtags:", ((AdvancedPost) post).getRemainingViews());
             for(String hashtag : ((AdvancedPost) post).getHashtags()){
@@ -154,8 +172,6 @@ public class SocialNetwork {
         for(Post post: postsFounded){
             System.out.println(formatPost(post));
         }
-
-
     }
 
     public List<Post> getAllPosts() {
@@ -178,7 +194,10 @@ public class SocialNetwork {
         if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this profile does not exist");
         }
-        List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
+        return postsFounded;
+    }
+
+    List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
         List<Post> postsFounded = postRepository.findPostByPhrase(searchTerm);
         if(postsFounded.size() == 0){
             throw new NotFoundException("Posts with this word in text does not exist");
@@ -186,4 +205,33 @@ public class SocialNetwork {
         return postsFounded;
     }
 
+    public void likePost(Integer idPost) throws NotFoundException {
+        Post post = findPostsbyId(idPost);
+        post.like();
+        postRepository.updatePost(post);
+    }
+    public void dislikePost(Integer idPost) throws NotFoundException {
+        Post post = findPostsbyId(idPost);
+        post.dislike();
+        postRepository.updatePost(post);
+    }
+
+    public void showPopularPosts(){
+        for(Post post: postRepository.getAllPosts()){//nao pensei em outra forma sem usar o getAllPosts
+            if(post.isPopular()){
+                System.out.println(formatPost(post));
+            }
+        }
+    }
+
+    public void showPopularHashtags(){
+        List<String> hashtags = postRepository.getHashtags();
+        for(String hashtag: hashtags){
+            System.out.println(hashtag);
+        }
+    }
+
+    
+
 }
+

@@ -9,6 +9,10 @@ import Models.Profile;
 public class ProfileRepository {
     private List<Profile> profiles = new ArrayList<Profile>();
 
+    public Integer getProfileAmount(){
+        return profiles.size();
+    }
+
     public Optional<Profile> findProfileById(Integer id) {
         for (Profile profile : profiles) {
             if (profile.getId() == id) {

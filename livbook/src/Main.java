@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 import Repositories.PostRepository;
 import Repositories.ProfileRepository;
 

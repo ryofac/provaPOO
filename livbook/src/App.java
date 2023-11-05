@@ -1,4 +1,3 @@
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,6 +16,16 @@ public class App {
     public App(SocialNetwork socialNetwork) {
         this.socialNetwork = socialNetwork;
     }
+    
+    private final String  MENU_TITLE = """
+ __       __  ____    ____ .______     ______     ______    __  ___ 
+|  |     |  | \\   \\  /   / |   _  \\   /  __  \\   /  __  \\  |  |/  / 
+|  |     |  |  \\   \\/   /  |  |_)  | |  |  |  | |  |  |  | |  '  /  
+|  |     |  |   \\      /   |   _  <  |  |  |  | |  |  |  | |    <   
+|  `----.|  |    \\    /    |  |_)  | |  `--'  | |  `--'  | |  .  \\  
+|_______||__|     \\__/     |______/   \\______/   \\______/  |__|\\__\\ 
+                                                                    
+""";
 
     // This class is used for menu options
     private class Option {
@@ -52,17 +61,24 @@ public class App {
             }, true),
             new Option("Search Post", none -> {
                 searchPost();
+            }, true),
+            new Option("Like Post", none -> {
+                likePost();
+            }, true),
+            new Option("Dislike Post", none -> {
+                dislikePost();
             }, true)
+
 
     };
 
     private void showMenu(Option... options) {
-        String title = "==== LIVBOOK ====";
+        String title = MENU_TITLE;
         Integer optionNumber = 0;
         System.out.println(title);
         for (Option option : options) {
             if (option.canShow) {
-                System.out.println(String.format("%d - %s", ++optionNumber, option));
+                System.out.println(String.format("+%d - %s", ++optionNumber, option));
             }
         }
     }
@@ -71,7 +87,7 @@ public class App {
         try {
             String name = IOUtils.getTextNormalized("Enter the profile username: ");
             String email = IOUtils.getTextNormalized("Enter profile email: ");
-            socialNetwork.includeProfile(new Profile(name, email));
+            socialNetwork.includeProfile(socialNetwork.createProfile(name, email));
             System.out.println("User created!");
         } catch (AlreadyExistsException e) {
             System.out.println("CANNOT CREATE USER: " + e.getMessage());
@@ -100,7 +116,7 @@ public class App {
     }
 
     private void showAllPosts() {
-        System.out.println("FEED - " + LocalDateTime.now());
+        System.out.println("-=-=-=-=-=- FEED =-=-=-=-=-=-= ");
         socialNetwork.showAllPosts();
         System.out.println("==========");
     }
@@ -127,7 +143,7 @@ public class App {
 
     private void createPost() {
         System.out.println("Autenticate...");
-        String name = IOUtils.getText("Enter your name: ");
+        String name = IOUtils.getText("Enter your username: ");
         String email = IOUtils.getText("Enter your email: ");
         try {
             Profile foundedByEmail = socialNetwork.findProfileByEmail(email);
@@ -145,9 +161,10 @@ public class App {
             Post created;
             if (isAdvanced) {
                 Integer remainingViews = IOUtils.getInt("Set the max views: ");
-                created = new AdvancedPost(null, text, foundedByEmail, remainingViews);
+                created = socialNetwork.createAdvancedPost(text, foundedByEmail, remainingViews);
             } else {
-                created = new Post(null, text, foundedByEmail);
+                created = socialNetwork.createPost(text, foundedByEmail);
+                //
 
             }
             // hashtags vão ser adcionadas a medida que são encontradas no próprio texto
@@ -191,21 +208,6 @@ public class App {
         } catch (NotFoundException err) {
             System.out.println("No posts founded by hashtag");
         }
-
-        // nao sei se vai ser util, mas ta ai
-        // tive uma ideia melhor, as hashtags serão caçadas e adcionadas no texto
-        // try{
-        // List<Post> postsFoundedByHashtagInText =
-        // socialNetwork.findPostByHashtagInText(searchTerm);
-        // System.out.println("Founded by hashtag in text: ");
-        // for (Post post : postsFoundedByHashtagInText) {
-        // System.out.println(post);
-        // }
-        // } catch(NotFoundException err){
-        // System.out.println("No posts founded by hashtag in text");
-        // }
-        // implementar nas opções de menu
-
         try {
             List<Post> postsFoundedByPhrase = socialNetwork.findPostByPhrase(searchTerm);
             System.out.println("===== Founded by phrase: =====");
@@ -216,6 +218,27 @@ public class App {
             System.out.println("No posts founded by phrase");
         }
     }
+        
+    private void likePost() {
+        Integer idPost = IOUtils.getInt("Enter the post id: ");
+        try {
+            socialNetwork.likePost(idPost);
+            System.out.println("Post liked!");
+        } catch (NotFoundException e) {
+            System.out.println("Post not founded!");
+        }
+        }
+
+        private void dislikePost() {
+        Integer idPost = IOUtils.getInt("Enter the post id: ");
+        try {
+            socialNetwork.dislikePost(idPost);
+            System.out.println("Post disliked!");
+        } catch (NotFoundException e) {
+            System.out.println("Post not founded!");
+        }
+    }
+    
 
     public void run() {
         Integer chosen;

@@ -20,6 +20,9 @@ public class PostRepository {
     public List<Post> getAllPosts() {
         return posts;
     }
+    public Integer getPostAmount(){
+        return posts.size();
+    }
 
     public Optional<Post> findPostById(Integer id) {
         Stream<Post> postsStream = posts.stream();
@@ -60,6 +63,19 @@ public class PostRepository {
         Stream<Post> postsStream = posts.stream();
         Stream<Post> postsFinded = postsStream.filter(post -> post.getText().contains("#" + searchTerm));
         return postsFinded.collect(Collectors.toList());
+    }
+
+    public void updatePost(Post post) {
+        Optional<Post> founded = findPostById(post.getId());
+        if (founded.isEmpty()) {
+            return;
+        }
+        Post postFounded = founded.get();
+        postFounded.setText(post.getText());
+    }
+
+    public List<String> getHashtags() {
+        return null;
     }
 
 }

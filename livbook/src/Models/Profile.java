@@ -1,16 +1,14 @@
 package Models;
 
 public class Profile {
-    private static Integer counter = 0;
     private Integer _id;
     private String _name;
     private String _email;
 
-    public Profile(String _name, String _email) {
-        this._id = counter;
+    public Profile(Integer id, String _name, String _email) {
+        this._id = id;
         this._name = _name;
         this._email = _email;
-        counter++;
     }
 
     public Integer getId() {
@@ -18,7 +16,7 @@ public class Profile {
     }
 
     public String getName() {
-        return this._name;
+        return this._name.contains("@")? this._name : "@" + this._name;
     }
 
     public void setName(String name) {
