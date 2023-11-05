@@ -114,9 +114,9 @@ public class SocialNetwork {
             formated += String.format("\t(%d - views remaining)\n hashtags:", ((AdvancedPost) post).getRemainingViews());
             for(String hashtag : ((AdvancedPost) post).getHashtags()){
                 formated += " " + hashtag;
-
-            }
+            }   
         }
+        formated += "\n"; // mais espaço no fim
         return formated;
     }
 

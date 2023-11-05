@@ -152,7 +152,7 @@ public class App {
             }
             // hashtags vão ser adcionadas a medida que são encontradas no próprio texto
             for (String hashtag : hashtagsFounded) {
-                created.setText(text.replace(hashtag, " "));
+                text = text.replace(hashtag.trim(), " ");
                 if (created instanceof AdvancedPost) {
                     ((AdvancedPost) created).addHashtag(hashtag);
                 } else {
@@ -160,6 +160,7 @@ public class App {
                 }
 
             }
+            created.setText(text);
             socialNetwork.includePost(created);
             System.out.println("Post added to feed!");
         } catch (NotFoundException e) {
