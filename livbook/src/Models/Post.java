@@ -53,6 +53,7 @@ public class Post {
     public Profile getOwner() {
         return this._owner;
     }
+ 
 
     public LocalDateTime getCreatedTime() {
         return this._createdTime;
@@ -60,8 +61,8 @@ public class Post {
 
     @Override
     public String toString() {
-        return String.format("%s \n %s \n==========\n %d likes %d dislikes \n %s", 
-        getOwner(), getText(), getLikes(), getDislikes(), getCreatedTime());
+        return String.format("==============\n %s - posted at %s \n================\n %s \n %d-likes %d-dislikes \n =-=-=-=-=-=-=-", 
+        getOwner(),  getCreatedTime(), getText(), getLikes(), getDislikes());
         }
     }
 

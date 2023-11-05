@@ -15,14 +15,14 @@ import Models.Profile;
 
  // @TODO: Descobrir porque as Streams tão fechando e bugando as pesquisas por Posts
 public class PostRepository {
-    private List<Post> posts = new ArrayList<Post>();
-    private Stream<Post> postsStream = posts.stream();
+    private List<Post> posts = new ArrayList<Post>(); 
     
     public List<Post> getAllPosts(){
         return posts;
     }
 
     public Optional<Post> findPostById(Integer id) {
+        Stream<Post> postsStream = posts.stream();
         Stream<Post> postsFinded = postsStream.filter(post -> post.getId() == id);
         return postsFinded.findFirst();
     }
@@ -38,11 +38,13 @@ public class PostRepository {
     }
 
     public List<Post> findPostByOwner(Profile owner) {
+        Stream<Post> postsStream = posts.stream();
         Stream<Post> postsFinded = postsStream.filter(post -> post.getOwner().equals(owner));
         return postsFinded.collect(Collectors.toList());
     }
 
     public List<Post> findPostByHashtag(String hashtag) {
+        Stream<Post> postsStream = posts.stream();
         Stream<Post> postsFinded = postsStream.filter(post -> {
             if (post instanceof AdvancedPost) {
                 return ((AdvancedPost) post).hasHashtag(hashtag);
@@ -58,14 +60,16 @@ public class PostRepository {
     }
 
     public List<Post> findPostByProfile(String searchTerm) {
+        Stream<Post> postsStream = posts.stream();
         Stream<Post> postsFinded = postsStream.filter(post -> post.getOwner().getName().equals(searchTerm));
         return postsFinded.collect(Collectors.toList());
 
         
     }
 
-    public List<Post> findPostByHashtagInText(String searchTerm) {
-        Stream<Post> postsFinded = postsStream.filter(post -> post.getText().contains(searchTerm));
+    public List<Post> findPostByPhrase(String searchTerm) {
+        Stream<Post> postsStream = posts.stream();
+        Stream<Post> postsFinded = postsStream.filter(post -> post.getText().contains("#" + searchTerm));
         return postsFinded.collect(Collectors.toList());
     }
 

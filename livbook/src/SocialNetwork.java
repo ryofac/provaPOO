@@ -173,16 +173,16 @@ public class SocialNetwork {
         return postsFounded;
     }
 
-    public List<Post> findPostByHashtagInText(String searchTerm) throws NotFoundException {
-        List<Post> postsFounded = postRepository.findPostByHashtagInText(searchTerm);
-        if(postsFounded.size() == 0){
-            throw new NotFoundException("Posts with this hashtag in text does not exist");
-        }
-        return postsFounded;
-    }
+    // public List<Post> findPostByHashtagInText(String searchTerm) throws NotFoundException {
+       
+    // }
 
     public List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
-        return null;
+         List<Post> postsFounded = postRepository.findPostByPhrase(searchTerm);
+        if(postsFounded.size() == 0){
+            throw new NotFoundException("Posts with this word in text does not exist");
+        }
+        return postsFounded;
     }
 
 }

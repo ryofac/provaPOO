@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class IOUtils {
     // Scanner utilizado para as operações de entrada e saída da classe
-    private static Scanner scanner = new Scanner(System.in).useDelimiter("\n");
+    private static Scanner scanner = new Scanner(System.in, "UTF-8").useDelimiter("\n");
 
 
     // Método para obter uma string passando uma mensagem, que também é uma string
@@ -12,6 +12,15 @@ public class IOUtils {
         System.out.print(msg);
         String input = scanner.next().trim();
         return input;
+    }
+
+    // Método para obter uma escolha (Sim ou não)
+    static public Boolean getChoice(String msg){
+        String result = getTextNormalized(msg + "[S/n] \n > ");
+        return result == "" || result.contains("s");
+        
+
+
     }
 
     //Usado para obter dados que no "banco" estão em um formato específico como username

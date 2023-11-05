@@ -3,9 +3,9 @@ package Models;
 import java.util.ArrayList;
 public class AdvancedPost extends Post {
     ArrayList<String> hashtags = new ArrayList<String>();
-    Double remainingViews;
+    Integer remainingViews;
 
-    public AdvancedPost(Integer _id, String _text, Profile _owner, Double remainingViews) {
+    public AdvancedPost(Integer _id, String _text, Profile _owner, Integer remainingViews) {
         super(_id, _text, _owner);
         this.remainingViews = remainingViews;
 
@@ -15,7 +15,7 @@ public class AdvancedPost extends Post {
         return this.hashtags;
     }
 
-    public Double getRemainingViews() {
+    public Integer getRemainingViews() {
         return this.remainingViews;
     }
 

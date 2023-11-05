@@ -1,9 +1,11 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import Exceptions.AlreadyExistsException;
 import Exceptions.NotFoundException;
+import Models.AdvancedPost;
 import Models.Post;
 import Models.Profile;
 
@@ -49,7 +51,6 @@ public class App {
         for (Option option : options) {
             if(option.canShow){
                 System.out.println(String.format("%d - %s", ++optionNumber, option));
-                
             }
         }
     }
@@ -59,7 +60,7 @@ public class App {
             String name = IOUtils.getTextNormalized("Enter the profile username: ");
             String email = IOUtils.getTextNormalized("Enter profile email: ");
             socialNetwork.includeProfile(new Profile(name, email));
-            System.out.println("Usuário criado com sucesso");
+            System.out.println("User created!");
         }catch(AlreadyExistsException e){
             System.out.println("CANNOT CREATE USER: " + e.getMessage());
             return;
@@ -69,7 +70,6 @@ public class App {
         }
     }
 
-    //TODO: Talvez seja bom retornar a profile achada ( se achada ), para reuso em outros métodos
     private void searchProfile(){
         String searchTerm = IOUtils.getTextNormalized("Enter the search term : [email/username] \n> ");
         try{
@@ -93,6 +93,25 @@ public class App {
         System.out.println("==========");
     }
 
+    private List<String> findHashtagInText(String text){
+        List<String> result = new ArrayList<>();
+        boolean coletting = false;
+        String actualHashtag = "";
+        for(int i = 0; i < text.length(); i++){
+            if(text.charAt(i) == '#' || coletting){
+                actualHashtag += text.charAt(i);
+                coletting = true;
+                if(text.charAt(i) == ' ' || text.charAt(i) == '\n' || i + 1 == text.length()){  
+                    result.add(actualHashtag);
+                    coletting = false;
+                    actualHashtag = "";
+                }
+            }
+        }
+        return result;
+
+    }
+
     private void createPost(){
         System.out.println("Autenticate...");
         var name = IOUtils.getText("Enter your name: ");
@@ -104,8 +123,37 @@ public class App {
                 System.out.println("Autentication failed!");
                 return;
             }
-            String text = IOUtils.getTextNormalized("What you want to share: \n");
-            socialNetwork.includePost(new Post(null, text, foundedByName));
+
+            String text = IOUtils.getTextNormalized("What do you want to share with world today? \n > ");
+          
+            List<String> hashtagsFounded = findHashtagInText(text);
+            if(hashtagsFounded.size() > 0) 
+                System.out.println("Warn: you can only embed hashtags in a advanced post");
+            Boolean isAdvanced = IOUtils.getChoice("Do you want to turn this into a advanced post? ");
+
+            Post created;
+            if(isAdvanced){
+                Integer remainingViews = IOUtils.getInt("Set the max views: ");
+                created = new AdvancedPost(null, text, foundedByEmail, remainingViews);
+            }else{
+                created = new Post(null, text, foundedByEmail);
+
+            }
+            
+            //hashtags vão ser adcionadas a medida que são encontradas no próprio texto
+            for(String hashtag : hashtagsFounded){
+                System.out.println(hashtag + " + > Hashtag achada");
+                created.setText(text.replace(hashtag, ""));
+                if(created instanceof AdvancedPost){
+                    ((AdvancedPost) created).addHashtag(hashtag);
+                }
+                else{
+                    System.out.println("Hashtag " + hashtag + " removed: you have to create an advanced post");
+                }
+                
+            }
+            socialNetwork.includePost(created);
+            System.out.println("Post added to feed!");
         } catch(NotFoundException e){
             System.out.println(e.getMessage());
         }
@@ -117,7 +165,7 @@ public class App {
         try{
             Profile userFoundedByName = socialNetwork.findProfileByName(searchTerm);
             List<Post> postsFoundedByUser = socialNetwork.findPostsbyOwner(userFoundedByName);
-            System.out.println("Founded by user: ");
+            System.out.println("====== Founded by user: ======= ");
             for(Post post : postsFoundedByUser){
                 System.out.println(post);
             }
@@ -134,11 +182,9 @@ public class App {
         } catch(NotFoundException e){
             System.out.println("No posts founded by text");
         }
-        
-        
         try{
             List<Post> postsFoundedByHashtag = socialNetwork.findPostByHashtag(searchTerm);
-            System.out.println("Founded by hashtag: ");
+            System.out.println("====== Founded by hashtag: ======= ");
             for (Post post : postsFoundedByHashtag) {
                 System.out.println(post);
             }
@@ -147,19 +193,21 @@ public class App {
         }
 
         //nao sei se vai ser util, mas ta ai
-        try{
-            List<Post> postsFoundedByHashtagInText = socialNetwork.findPostByHashtagInText(searchTerm);
-            System.out.println("Founded by hashtag in text: ");
-            for (Post post : postsFoundedByHashtagInText) {
-                System.out.println(post);
-            }
-        } catch(NotFoundException err){
-            System.out.println("No posts founded by hashtag in text");
-        }
+        // tive uma ideia melhor, as hashtags serão caçadas e adcionadas no texto
+        // try{
+        //     List<Post> postsFoundedByHashtagInText = socialNetwork.findPostByHashtagInText(searchTerm);
+        //     System.out.println("Founded by hashtag in text: ");
+        //     for (Post post : postsFoundedByHashtagInText) {
+        //         System.out.println(post);
+        //     }
+        // } catch(NotFoundException err){
+        //     System.out.println("No posts founded by hashtag in text");
+        // }
         //implementar nas opções de menu
+
         try{
             List<Post> postsFoundedByPhrase = socialNetwork.findPostByPhrase(searchTerm);
-            System.out.println("Founded by phrase: ");          
+            System.out.println("===== Founded by phrase: =====");          
             for (Post post : postsFoundedByPhrase) {
                 System.out.println(post);
             }
