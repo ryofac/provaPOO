@@ -266,5 +266,13 @@ public class SocialNetwork {
         }
 
     }
+
+    public void deletePost(Integer idPost) throws NotFoundException {
+        Optional<Post> founded = postRepository.findPostById(idPost);
+        if(founded.isEmpty()){
+            throw new NotFoundException("Post with this id does not exist");
+        }
+        postRepository.deletePost(founded.get());
+    }
 }
 

@@ -67,7 +67,16 @@ public class App {
             }, true),
             new Option("Dislike Post", none -> {
                 dislikePost();
-            }, true)
+            }, true),
+            new Option("Delete Post", none -> {
+                deletePost();
+            }, true),
+            new Option("Exit", none -> {
+                System.out.println("Bye!");
+            }, true),
+            // new Option("Show Popular Posts", none -> {
+            //     showPopularPosts();
+            // }, true),
 
 
     };
@@ -80,6 +89,16 @@ public class App {
             if (option.canShow) {
                 System.out.println(String.format("+%d - %s", ++optionNumber, option));
             }
+        }
+    }
+
+    private void deletePost() {
+        Integer idPost = IOUtils.getInt("Enter the post id: ");
+        try {
+            socialNetwork.deletePost(idPost);
+            System.out.println("Post deleted!");
+        } catch (NotFoundException e) {
+            System.out.println("Post not founded!");
         }
     }
 

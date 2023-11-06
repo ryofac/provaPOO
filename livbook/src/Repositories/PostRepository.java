@@ -82,5 +82,8 @@ public class PostRepository {
     public List<String> getHashtags() {
         return null;
     }
+    public void deletePost(Post post) {
+        posts.remove(post);
+    }
 
 }
