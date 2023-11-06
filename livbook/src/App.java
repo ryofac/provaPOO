@@ -16,16 +16,19 @@ public class App {
     public App(SocialNetwork socialNetwork) {
         this.socialNetwork = socialNetwork;
     }
-    
-    private final String  MENU_TITLE = """
- __       __  ____    ____ .______     ______     ______    __  ___ 
-|  |     |  | \\   \\  /   / |   _  \\   /  __  \\   /  __  \\  |  |/  / 
-|  |     |  |  \\   \\/   /  |  |_)  | |  |  |  | |  |  |  | |  '  /  
-|  |     |  |   \\      /   |   _  <  |  |  |  | |  |  |  | |    <   
-|  `----.|  |    \\    /    |  |_)  | |  `--'  | |  `--'  | |  .  \\  
-|_______||__|     \\__/     |______/   \\______/   \\______/  |__|\\__\\ 
-                                                                    
-""";
+
+    private final String MENU_TITLE = """
+             __       __  ____    ____ .______     ______     ______    __  ___
+            |  |     |  | \\   \\  /   / |   _  \\   /  __  \\   /  __  \\  |  |/  /
+            |  |     |  |  \\   \\/   /  |  |_)  | |  |  |  | |  |  |  | |  '  /
+            |  |     |  |   \\      /   |   _  <  |  |  |  | |  |  |  | |    <
+            |  `----.|  |    \\    /    |  |_)  | |  `--'  | |  `--'  | |  .  \\
+            |_______||__|     \\__/     |______/   \\______/   \\______/  |__|\\__\\
+
+            """;
+
+    private final String PROFILE_PATH = "/home/ryan-dev/Works/Faculdade/Second Period/ads-poo/prova/provaPOO/livbook/src/data/profiles.txt";
+    private final String POST_PATH = "/home/ryan-dev/Works/Faculdade/Second Period/ads-poo/prova/provaPOO/livbook/src/data/posts.txt";
 
     // This class is used for menu options
     private class Option {
@@ -75,9 +78,8 @@ public class App {
                 System.out.println("Bye!");
             }, true),
             // new Option("Show Popular Posts", none -> {
-            //     showPopularPosts();
+            // showPopularPosts();
             // }, true),
-
 
     };
 
@@ -188,10 +190,10 @@ public class App {
             }
             // hashtags vão ser adcionadas a medida que são encontradas no próprio texto
             for (String hashtag : hashtagsFounded) {
-                text = text.replace(hashtag.trim(), ConsoleColors.BLUE_BRIGHT + hashtag + ConsoleColors.RESET);
                 if (created instanceof AdvancedPost) {
                     ((AdvancedPost) created).addHashtag(hashtag);
                 } else {
+                    text = text.replace(hashtag, " ");
                     System.out.println("Hashtag " + hashtag + " removed: you have to create an advanced post");
                 }
 
@@ -205,7 +207,8 @@ public class App {
     }
 
     private void searchPost() {
-        String searchTerm = IOUtils.getTextNormalized("Enter the search parameter: [profile username/phrase/hashtag]\n > ");
+        String searchTerm = IOUtils
+                .getTextNormalized("Enter the search parameter: [profile username/phrase/hashtag]\n > ");
         try {
             Profile userFoundedByName = socialNetwork.findProfileByName(searchTerm);
             socialNetwork.showPostsPerProfile(userFoundedByName);
@@ -223,7 +226,7 @@ public class App {
             System.out.println("No posts founded by hashtag");
         }
     }
-        
+
     private void likePost() {
         showAllPosts();
         Integer idPost = IOUtils.getInt("Enter the post id: ");
@@ -234,9 +237,9 @@ public class App {
         } catch (NotFoundException e) {
             System.out.println("Post not founded!");
         }
-        }
+    }
 
-        private void dislikePost() {
+    private void dislikePost() {
         Integer idPost = IOUtils.getInt("Enter the post id: ");
         try {
             socialNetwork.dislikePost(idPost);
@@ -247,10 +250,10 @@ public class App {
             System.out.println("Post not founded!");
         }
     }
-    
 
     public void run() {
         Integer chosen;
+        socialNetwork.readData(PROFILE_PATH, POST_PATH);
         while (true) {
             showMenu(options);
             // Controla a opção escolhida atual: entrada de dados do programa
@@ -268,6 +271,7 @@ public class App {
                 }
                 // Escolhe a opção pelo que foi digitado - 1 (o indice real do array)
                 options[chosen - 1].callback.accept(null);
+                socialNetwork.saveData(PROFILE_PATH, POST_PATH);
             } catch (NumberFormatException e) {
                 System.out.println("Enter only numbers, please!");
             }

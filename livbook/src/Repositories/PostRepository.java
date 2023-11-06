@@ -1,5 +1,6 @@
 package Repositories;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 import Models.AdvancedPost;
 import Models.Post;
 import Models.Profile;
+import Utils.IOUtils;
 
 /*
  * Stores and handle the posts data
@@ -17,16 +19,25 @@ import Models.Profile;
 public class PostRepository {
     private List<Post> posts = new ArrayList<Post>();
 
+    public void writePostsinFile(String filepath) {
+        StringBuilder str = new StringBuilder();
+        for (Post post : posts) {
+            str.append(post.toString().trim() + "\n");
+        }
+        IOUtils.writeOnFile(filepath, str.toString());
+    }
+
     public List<Post> getAllPosts() {
         return posts;
     }
-    public Integer getPostAmount(){
+
+    public Integer getPostAmount() {
         return posts.size();
     }
 
-    public void removeSeenPosts(){
+    public void removeSeenPosts() {
         posts.removeIf(post -> post instanceof AdvancedPost && !((AdvancedPost) post).canSee());
-        
+
     }
 
     public Optional<Post> findPostById(Integer id) {
@@ -82,6 +93,7 @@ public class PostRepository {
     public List<String> getHashtags() {
         return null;
     }
+
     public void deletePost(Post post) {
         posts.remove(post);
     }

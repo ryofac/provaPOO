@@ -1,7 +1,12 @@
 import Repositories.ProfileRepository;
+import Utils.ConsoleColors;
+import Utils.IOUtils;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
 import Exceptions.AlreadyExistsException;
 import Exceptions.NotFoundException;
 import Models.AdvancedPost;
@@ -18,20 +23,20 @@ public class SocialNetwork {
         this.postRepository = postRepository;
     }
 
-    public Profile createProfile(String username, String email){
+    public Profile createProfile(String username, String email) {
         // O id sempre vai ser o id do último da lista + 1
-        if(profileRepository.getAllProfiles().isEmpty()){
+        if (profileRepository.getAllProfiles().isEmpty()) {
             return new Profile(1, username, email);
 
         }
         Integer id = profileRepository.getAllProfiles().getLast().getId() + 1;
         return new Profile(id, username, email);
-        
+
     }
-    
-    public Post createPost(String text, Profile owner){
+
+    public Post createPost(String text, Profile owner) {
         // O id sempre vai ser o id do último da lista + 1
-        if(postRepository.getAllPosts().isEmpty()){
+        if (postRepository.getAllPosts().isEmpty()) {
             return new Post(1, text, owner);
         }
         Integer id = postRepository.getAllPosts().getLast().getId() + 1;
@@ -39,7 +44,7 @@ public class SocialNetwork {
 
     }
 
-    public AdvancedPost createAdvancedPost(String text, Profile owner, Integer remainingViews){
+    public AdvancedPost createAdvancedPost(String text, Profile owner, Integer remainingViews) {
         Integer id = postRepository.getPostAmount() + 1;
         return new AdvancedPost(id, text, owner, remainingViews);
 
@@ -135,21 +140,30 @@ public class SocialNetwork {
 
     // Usado para formatar os posts no formato adequado
     public String formatPost(Post post) {
-        String formated = String.format("""
-            -----------------------------
-            <ID - %d> %s - at %s
-            %s 
-            ------------------------------
-            %d - likes %d - dislikes
-            """, 
-            post.getId(), post.getOwner().getName(), post.getCreatedTime().format(DateTimeFormatter.ofPattern("dd/MM (EE): HH:mm")),
-            post.getText(), post.getLikes(), post.getDislikes());
+        String postText = post.getText();
+        if (post instanceof AdvancedPost) {
+            List<String> hashtags = ((AdvancedPost) post).getHashtags();
+            for (String hashtag : hashtags) {
+                postText = postText.replace(hashtag.trim(), ConsoleColors.BLUE_BRIGHT + hashtag + ConsoleColors.RESET);
 
-        if(post instanceof AdvancedPost){
+            }
+        }
+        String formated = String.format("""
+                -----------------------------
+                <ID - %d> %s - at %s
+                %s
+                ------------------------------
+                %d - likes %d - dislikes
+                """,
+                post.getId(), post.getOwner().getName(),
+                post.getCreatedTime().format(DateTimeFormatter.ofPattern("dd/MM (EE): HH:mm")),
+                postText, post.getLikes(), post.getDislikes());
+
+        if (post instanceof AdvancedPost) {
             formated += String.format("(%d - views remaining)\n hashtags:", ((AdvancedPost) post).getRemainingViews());
-            for(String hashtag : ((AdvancedPost) post).getHashtags()){
+            for (String hashtag : ((AdvancedPost) post).getHashtags()) {
                 formated += " " + hashtag;
-            }   
+            }
         }
         formated += "\n"; // mais espaço no fim
         return formated;
@@ -180,13 +194,13 @@ public class SocialNetwork {
         }
     }
 
-    public void showPostsPerHashtag(String hashtag) throws NotFoundException{
+    public void showPostsPerHashtag(String hashtag) throws NotFoundException {
         List<Post> postsFounded = postRepository.findPostByHashtag(hashtag);
-        if(postsFounded.size() == 0){
+        if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this hashtag does not exist");
         }
         System.out.println("==== Founded by hashtag: ====");
-        for(Post post: postsFounded){
+        for (Post post : postsFounded) {
             System.out.println(formatPost(post));
         }
     }
@@ -208,9 +222,9 @@ public class SocialNetwork {
         postRepository.includePost(post);
     }
 
-    public void showAllPosts(){
+    public void showAllPosts() {
         viewPosts();
-        for(Post post: postRepository.getAllPosts()){
+        for (Post post : postRepository.getAllPosts()) {
             System.out.println(formatPost(post));
         }
         postRepository.removeSeenPosts();
@@ -226,7 +240,7 @@ public class SocialNetwork {
 
     List<Post> findPostByPhrase(String searchTerm) throws NotFoundException {
         List<Post> postsFounded = postRepository.findPostByPhrase(searchTerm);
-        if(postsFounded.size() == 0){
+        if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this word in text does not exist");
         }
         return postsFounded;
@@ -237,30 +251,31 @@ public class SocialNetwork {
         post.like();
         postRepository.updatePost(post);
     }
+
     public void dislikePost(Integer idPost) throws NotFoundException {
         Post post = findPostsbyId(idPost);
         post.dislike();
         postRepository.updatePost(post);
     }
 
-    public void showPopularPosts(){
-        for(Post post: postRepository.getAllPosts()){
-            if(post.isPopular()){
+    public void showPopularPosts() {
+        for (Post post : postRepository.getAllPosts()) {
+            if (post.isPopular()) {
                 System.out.println(formatPost(post));
             }
         }
     }
 
-    public void showPopularHashtags(){
+    public void showPopularHashtags() {
         List<String> hashtags = postRepository.getHashtags();
-        for(String hashtag: hashtags){
+        for (String hashtag : hashtags) {
             System.out.println(hashtag);
         }
     }
 
-    public void viewPosts(){
-        for(Post post: getAllPosts()){
-            if(post instanceof AdvancedPost){
+    public void viewPosts() {
+        for (Post post : getAllPosts()) {
+            if (post instanceof AdvancedPost) {
                 ((AdvancedPost) post).decrementViews();
             }
         }
@@ -269,10 +284,77 @@ public class SocialNetwork {
 
     public void deletePost(Integer idPost) throws NotFoundException {
         Optional<Post> founded = postRepository.findPostById(idPost);
-        if(founded.isEmpty()){
+        if (founded.isEmpty()) {
             throw new NotFoundException("Post with this id does not exist");
         }
         postRepository.deletePost(founded.get());
     }
-}
 
+    // Como vem os dados :
+    // Em caso de Post = TIPO;id;text;ownerId;createdDatatime
+    // Em caso de AdvancedPost =
+    // TIPO;id;text;ownerId;createdDataTime;remainingViews;hashtags[hash1-hash2...]
+    public void loadPostsfromFile(String filepath) {
+        List<String> lines = IOUtils.readLinesOnFile(filepath);
+        Stream<String> linesStream = lines.stream();
+        linesStream.forEach(line -> {
+            String[] data = line.split(";");
+            try {
+                switch (data[0]) {
+                    case "P":
+                        // incluindo o post segundo os dados do arquivo
+                        includePost(
+                                new Post(Integer.parseInt(data[1]), data[2],
+                                        findProfileById(Integer.parseInt(data[3]))));
+                        break;
+
+                    case "AP":
+                        // Criando o post a ser adicionado
+                        AdvancedPost toBeAdded = new AdvancedPost(Integer.parseInt(data[1]), data[2],
+                                findProfileById(Integer.parseInt(data[3])), Integer.parseInt(data[5]));
+
+                        // Pegando só as hashtags do arquivo
+                        String[] hashtags = data[6].split("-");
+
+                        // Adcionando as hashtags do arquivo ao perfil
+                        for (String hashtag : hashtags) {
+                            toBeAdded.addHashtag(hashtag);
+                        }
+                        includePost(toBeAdded);
+                        break;
+                }
+            } catch (NotFoundException e) {
+                System.out.println("ERROR: user founded in file not related to any post");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    // Como vem os dados: id;name;email
+    public void loadProfilesFromFile(String filepath) {
+        List<String> lines = IOUtils.readLinesOnFile(filepath);
+        Stream<String> linesStream = lines.stream();
+        linesStream.forEach(line -> {
+            String[] data = line.split(";");
+            try {
+                includeProfile(new Profile(Integer.parseInt(data[0]), data[1], data[2]));
+
+            } catch (AlreadyExistsException e) {
+                System.err.println("ERROR: Conflict with existing user in memory and in file");
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    public void saveData(String profilePath, String postPath) {
+        profileRepository.writeProfilesinFile(profilePath);
+        postRepository.writePostsinFile(postPath);
+
+    }
+
+    public void readData(String profilePath, String postPath) {
+        loadProfilesFromFile(profilePath);
+        loadPostsfromFile(postPath);
+    }
+}

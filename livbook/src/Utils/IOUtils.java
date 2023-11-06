@@ -56,7 +56,7 @@ public class IOUtils {
     }
 
     // Classe que encapsula a escrita em arquivo passando uma string com o conteúdo
-    static File writeOnFile(String filePath, String content) {
+    public static File writeOnFile(String filePath, String content) {
         Charset utf8 = Charset.forName("UTF-8");
         try (FileWriter escritor = new FileWriter(filePath, utf8, false)) {
             escritor.write(content);
@@ -71,7 +71,7 @@ public class IOUtils {
 
     // Classe que encapsula a leitura das linhas de um arquivo, retornando uma lista
     // de linhas
-    static List<String> readLinesOnFile(String filePath) {
+    public static List<String> readLinesOnFile(String filePath) {
         try {
 
             File toRead = new File(filePath);
@@ -95,7 +95,7 @@ public class IOUtils {
     }
 
     // Método que encapsula a criação de um arquivo passando um caminho
-    static void createFile(String filePath) {
+    public static void createFile(String filePath) {
         try {
             File toBeCreated = new File(filePath);
             if (!toBeCreated.exists()) {

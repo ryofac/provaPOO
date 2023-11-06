@@ -1,6 +1,7 @@
 package Models;
 
 import java.util.ArrayList;
+
 public class AdvancedPost extends Post {
     ArrayList<String> hashtags = new ArrayList<String>();
     Integer remainingViews;
@@ -40,12 +41,19 @@ public class AdvancedPost extends Post {
         return false;
     }
 
-    public Boolean canSee(){
+    public Boolean canSee() {
         return remainingViews > 0;
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        String out = super.toString();
+        out += String.format(";%d;", this.remainingViews);
+        for (String hashtag : hashtags) {
+            out += hashtag.trim() + "-";
+        }
+        out += '\b';
+        return out;
+
     }
 }

@@ -4,16 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import Models.Post;
 import Models.Profile;
+import Utils.IOUtils;
 
 public class ProfileRepository {
     private List<Profile> profiles = new ArrayList<Profile>();
 
-    public List<Profile> getAllProfiles(){
+    public void writeProfilesinFile(String filepath) {
+        StringBuilder str = new StringBuilder();
+        for (Profile profile : profiles) {
+            str.append(profile.toString().trim() + "\n");
+        }
+        IOUtils.writeOnFile(filepath, str.toString());
+    }
+
+    public List<Profile> getAllProfiles() {
         return profiles;
     }
 
-    public Integer getProfileAmount(){
+    public Integer getProfileAmount() {
         return profiles.size();
     }
 

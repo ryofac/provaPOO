@@ -26,11 +26,11 @@ public class Post {
         this._likes++;
     }
 
-    public Integer getLikes(){
+    public Integer getLikes() {
         return this._likes;
     }
 
-    public Integer getDislikes(){
+    public Integer getDislikes() {
         return this._dislikes;
     }
 
@@ -53,11 +53,19 @@ public class Post {
     public Profile getOwner() {
         return this._owner;
     }
- 
 
     public LocalDateTime getCreatedTime() {
         return this._createdTime;
     }
 
-    
+    // Usado para facilitar a gravação em arquivo:
+    @Override
+    public String toString() {
+        if (this instanceof AdvancedPost) {
+            return String.format("%s;%d;%s;%d;%s", "AP", getId(), getText(), getOwner().getId(), getCreatedTime());
+        }
+        return String.format("%s;%d;%s;%d;%s", "P", getId(), getText(), getOwner().getId(), getCreatedTime());
+
+    }
+
 }
