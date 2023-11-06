@@ -1,5 +1,4 @@
 import Repositories.ProfileRepository;
-
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -126,10 +125,18 @@ public class SocialNetwork {
 
     // Usado para formatar os posts no formato adequado
     public String formatPost(Post post) {
-        String formated = String.format("-----------------------\n<%s> \t%s - at %s \n\t%s \n -------------------- \n %d - likes %d - dislikes\n", 
-            post.getId(), post.getOwner().getName(), post.getCreatedTime().format(DateTimeFormatter.ofPattern("dd/MM (E): HH:mm")), post.getText(), post.getLikes(), post.getDislikes());
+        String formated = String.format("""
+            -----------------------------
+            <ID - %d> %s - at %s
+            %s 
+            ------------------------------
+            %d - likes %d - dislikes
+            """, 
+            post.getId(), post.getOwner().getName(), post.getCreatedTime().format(DateTimeFormatter.ofPattern("dd/MM (EE): HH:mm")),
+            post.getText(), post.getLikes(), post.getDislikes());
+
         if(post instanceof AdvancedPost){
-            formated += String.format("\t(%d - views remaining)\n hashtags:", ((AdvancedPost) post).getRemainingViews());
+            formated += String.format("(%d - views remaining)\n hashtags:", ((AdvancedPost) post).getRemainingViews());
             for(String hashtag : ((AdvancedPost) post).getHashtags()){
                 formated += " " + hashtag;
             }   
@@ -157,7 +164,7 @@ public class SocialNetwork {
         if (postsFounded.size() == 0) {
             throw new NotFoundException("Posts with this owner does not exist");
         }
-        System.out.println("==== Founded by hashtag: ====");
+        System.out.println("==== Founded by Profile: ====");
         for (Post actualPost : postsFounded) {
             System.out.println(formatPost(actualPost));
         }
@@ -174,6 +181,14 @@ public class SocialNetwork {
         }
     }
 
+    public void showPostsPerText(String text) throws NotFoundException {
+        List<Post> postsFoundedByText = findPostByPhrase(text);
+        System.out.println("===== Founded by text: =====");
+        for (Post post : postsFoundedByText) {
+            System.out.println(formatPost(post));
+        }
+    }
+
     public List<Post> getAllPosts() {
         return postRepository.getAllPosts();
 
@@ -183,10 +198,12 @@ public class SocialNetwork {
         postRepository.includePost(post);
     }
 
-    public void showAllPosts(){ 
+    public void showAllPosts(){
+        viewPosts();
         for(Post post: postRepository.getAllPosts()){
             System.out.println(formatPost(post));
         }
+        postRepository.removeSeenPosts();
     }
 
     public List<Post> findPostByProfile(String searchTerm) throws NotFoundException {
@@ -217,7 +234,7 @@ public class SocialNetwork {
     }
 
     public void showPopularPosts(){
-        for(Post post: postRepository.getAllPosts()){//nao pensei em outra forma sem usar o getAllPosts
+        for(Post post: postRepository.getAllPosts()){
             if(post.isPopular()){
                 System.out.println(formatPost(post));
             }
@@ -231,7 +248,13 @@ public class SocialNetwork {
         }
     }
 
-    
+    public void viewPosts(){
+        for(Post post: getAllPosts()){
+            if(post instanceof AdvancedPost){
+                ((AdvancedPost) post).decrementViews();
+            }
+        }
 
+    }
 }
 

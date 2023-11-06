@@ -7,7 +7,7 @@ import Exceptions.NotFoundException;
 import Models.AdvancedPost;
 import Models.Post;
 import Models.Profile;
-
+import Utils.ConsoleColors;
 import Utils.IOUtils;
 
 public class App {
@@ -118,7 +118,7 @@ public class App {
     private void showAllPosts() {
         System.out.println("-=-=-=-=-=- FEED =-=-=-=-=-=-= ");
         socialNetwork.showAllPosts();
-        System.out.println("==========");
+        System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
     }
 
     // Função acessória para achar hashtags diretamente o texto
@@ -143,8 +143,8 @@ public class App {
 
     private void createPost() {
         System.out.println("Autenticate...");
-        String name = IOUtils.getText("Enter your username: ");
-        String email = IOUtils.getText("Enter your email: ");
+        String name = IOUtils.getTextNormalized("Enter your username: ");
+        String email = IOUtils.getTextNormalized("Enter your email: ");
         try {
             Profile foundedByEmail = socialNetwork.findProfileByEmail(email);
             Profile foundedByName = socialNetwork.findProfileByName(name);
@@ -169,7 +169,7 @@ public class App {
             }
             // hashtags vão ser adcionadas a medida que são encontradas no próprio texto
             for (String hashtag : hashtagsFounded) {
-                text = text.replace(hashtag.trim(), " ");
+                text = text.replace(hashtag.trim(), ConsoleColors.BLUE_BRIGHT + hashtag + ConsoleColors.RESET);
                 if (created instanceof AdvancedPost) {
                     ((AdvancedPost) created).addHashtag(hashtag);
                 } else {
@@ -194,12 +194,7 @@ public class App {
             System.out.println("No posts founded by user");
         }
         try {
-            List<Post> postsFoundedByText = socialNetwork.findPostByPhrase(searchTerm);
-            System.out.println("===== Founded by text: =====");
-            for (Post post : postsFoundedByText) {
-                System.out.println(post);
-
-            }
+            socialNetwork.showPostsPerText(searchTerm);
         } catch (NotFoundException e) {
             System.out.println("No posts founded by text");
         }
@@ -208,22 +203,15 @@ public class App {
         } catch (NotFoundException err) {
             System.out.println("No posts founded by hashtag");
         }
-        try {
-            List<Post> postsFoundedByPhrase = socialNetwork.findPostByPhrase(searchTerm);
-            System.out.println("===== Founded by phrase: =====");
-            for (Post post : postsFoundedByPhrase) {
-                System.out.println(post);
-            }
-        } catch (NotFoundException err) {
-            System.out.println("No posts founded by phrase");
-        }
     }
         
     private void likePost() {
+        showAllPosts();
         Integer idPost = IOUtils.getInt("Enter the post id: ");
         try {
             socialNetwork.likePost(idPost);
-            System.out.println("Post liked!");
+            Post founded = socialNetwork.findPostsbyId(idPost);
+            System.out.println("Post from " + founded.getOwner().getName() + "liked!");
         } catch (NotFoundException e) {
             System.out.println("Post not founded!");
         }
@@ -233,7 +221,9 @@ public class App {
         Integer idPost = IOUtils.getInt("Enter the post id: ");
         try {
             socialNetwork.dislikePost(idPost);
+            Post founded = socialNetwork.findPostsbyId(idPost);
             System.out.println("Post disliked!");
+            System.out.println("Post from " + founded.getOwner().getName() + "disliked!");
         } catch (NotFoundException e) {
             System.out.println("Post not founded!");
         }

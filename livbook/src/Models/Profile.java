@@ -16,7 +16,7 @@ public class Profile {
     }
 
     public String getName() {
-        return this._name.contains("@")? this._name : "@" + this._name;
+        return this._name;
     }
 
     public void setName(String name) {

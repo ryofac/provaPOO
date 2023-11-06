@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import Models.AdvancedPost;
 import Models.Post;
 import Models.Profile;
@@ -13,7 +14,6 @@ import Models.Profile;
  * Stores and handle the posts data
  */
 
-// @TODO: Descobrir porque as Streams tão fechando e bugando as pesquisas por Posts
 public class PostRepository {
     private List<Post> posts = new ArrayList<Post>();
 
@@ -22,6 +22,11 @@ public class PostRepository {
     }
     public Integer getPostAmount(){
         return posts.size();
+    }
+
+    public void removeSeenPosts(){
+        posts.removeIf(post -> post instanceof AdvancedPost && !((AdvancedPost) post).canSee());
+        
     }
 
     public Optional<Post> findPostById(Integer id) {
@@ -61,7 +66,7 @@ public class PostRepository {
 
     public List<Post> findPostByPhrase(String searchTerm) {
         Stream<Post> postsStream = posts.stream();
-        Stream<Post> postsFinded = postsStream.filter(post -> post.getText().contains("#" + searchTerm));
+        Stream<Post> postsFinded = postsStream.filter(post -> post.getText().contains(searchTerm));
         return postsFinded.collect(Collectors.toList());
     }
 

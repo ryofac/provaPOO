@@ -24,7 +24,7 @@ public class AdvancedPost extends Post {
     }
 
     public Boolean decrementViews() {
-        if (this.remainingViews-- < 0) {
+        if (this.remainingViews - 1 < 0) {
             return false;
         }
         remainingViews--;
@@ -38,6 +38,10 @@ public class AdvancedPost extends Post {
             }
         }
         return false;
+    }
+
+    public Boolean canSee(){
+        return remainingViews > 0;
     }
 
     @Override
