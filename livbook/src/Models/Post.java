@@ -16,6 +16,12 @@ public class Post {
         this._owner = _owner;
         this._createdTime = LocalDateTime.now();
     }
+    public Post(Integer _id, String _text, Profile _owner, LocalDateTime createdDateTime) {
+        this._id = _id;
+        this._text = _text;
+        this._owner = _owner;
+        this._createdTime = createdDateTime;
+    }
 
     public Boolean isPopular() {
         // Returns true if the like amount is greatear than 50 % of dislikes
@@ -57,6 +63,12 @@ public class Post {
 
     public LocalDateTime getCreatedTime() {
         return this._createdTime;
+    }
+
+    // Usado para facilitar a gravação em arquivo:
+    @Override
+    public String toString() {
+        return String.format("%d;%s;%d;%d;%s", getId(), getText(), getLikes(), getDislikes(), getCreatedTime());
     }
 
     

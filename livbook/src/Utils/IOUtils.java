@@ -13,14 +13,14 @@ public class IOUtils {
     private static Scanner scanner = new Scanner(System.in, "UTF-8").useDelimiter("\n");
 
     // Método para obter uma string passando uma mensagem, que também é uma string
-    static public String getText(String msg) {
+    public static String getText(String msg) {
         System.out.print(msg);
         String input = scanner.next().trim();
         return input;
     }
 
     // Método para obter uma escolha (Sim ou não)
-    static public Boolean getChoice(String msg) {
+   public static Boolean getChoice(String msg) {
         String result = getTextNormalized(msg + " [S/n] \n > ");
         return result == "" || result.contains("s");
 
@@ -28,12 +28,12 @@ public class IOUtils {
 
     // Usado para obter dados que no "banco" estão em um formato específico como
     // username
-    static public String getTextNormalized(String msg) {
+    public static String getTextNormalized(String msg) {
         return getText(msg).trim().toLowerCase();
     }
 
     // Método para obter um inteiro passando uma mensagem que é uma string
-    static public Integer getInt(String msg) throws NumberFormatException {
+    public static  Integer getInt(String msg) throws NumberFormatException {
         System.out.print(msg);
         String input = scanner.next().trim();
         return Integer.parseInt(input);
@@ -42,7 +42,7 @@ public class IOUtils {
 
     // Método que quando invocado cria a ilusão de apagar a tela:
     // exibe vários caracteres de quebra de linha
-    static public void clearScreen() {
+   public static  void clearScreen() {
         System.out.print("<Enter....>");
         scanner.next();
         System.out.println("\n".repeat(20));
@@ -51,12 +51,12 @@ public class IOUtils {
     // Fecha o scanner para as operações de entrada e saída da classe
     // É obrigatório a sua invoação ao fim do programa, se não realizada, é
     // levantada a
-    static public void closeScanner() {
+   public static void closeScanner() {
         scanner.close();
     }
 
     // Classe que encapsula a escrita em arquivo passando uma string com o conteúdo
-    static File writeOnFile(String filePath, String content) {
+    public static File writeOnFile(String filePath, String content) {
         Charset utf8 = Charset.forName("UTF-8");
         try (FileWriter escritor = new FileWriter(filePath, utf8, false)) {
             escritor.write(content);
@@ -71,7 +71,7 @@ public class IOUtils {
 
     // Classe que encapsula a leitura das linhas de um arquivo, retornando uma lista
     // de linhas
-    static List<String> readLinesOnFile(String filePath) {
+    public static List<String> readLinesOnFile(String filePath) {
         try {
 
             File toRead = new File(filePath);
@@ -87,7 +87,7 @@ public class IOUtils {
             reader.close();
             return lines;
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("An error ocurred while reading the file" + filePath);
             e.printStackTrace();
             return null;
@@ -95,7 +95,7 @@ public class IOUtils {
     }
 
     // Método que encapsula a criação de um arquivo passando um caminho
-    static void createFile(String filePath) {
+    public static void createFile(String filePath) {
         try {
             File toBeCreated = new File(filePath);
             if (!toBeCreated.exists()) {

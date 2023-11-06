@@ -12,10 +12,15 @@ import Utils.IOUtils;
 
 public class App {
     private SocialNetwork socialNetwork;
+    private String profileFilepath;
+    private String postFilepath;
 
-    public App(SocialNetwork socialNetwork) {
+    public App(SocialNetwork socialNetwork, String postFilepath, String profileFilepath) {
         this.socialNetwork = socialNetwork;
+        this.profileFilepath = profileFilepath;
+        this.postFilepath = postFilepath;
     }
+
     
     private final String  MENU_TITLE = """
  __       __  ____    ____ .______     ______     ______    __  ___ 
@@ -69,8 +74,12 @@ public class App {
                 dislikePost();
             }, true)
 
-
     };
+
+    public void loadData(){
+        socialNetwork.loadPostsfromFile(postFilepath);
+        socialNetwork.loadProfilesFromFile(profileFilepath);
+    }
 
     private void showMenu(Option... options) {
         String title = MENU_TITLE;

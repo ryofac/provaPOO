@@ -14,6 +14,7 @@ import Models.Profile;
  * Stores and handle the posts data
  */
 
+ // TODO: Implementar o escrever em arquivo nesse repositório
 public class PostRepository {
     private List<Post> posts = new ArrayList<Post>();
 

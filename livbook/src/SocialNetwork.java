@@ -1,7 +1,11 @@
 import Repositories.ProfileRepository;
+import Utils.IOUtils;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
 import Exceptions.AlreadyExistsException;
 import Exceptions.NotFoundException;
 import Models.AdvancedPost;
@@ -16,6 +20,10 @@ public class SocialNetwork {
     public SocialNetwork(ProfileRepository profileRepository, PostRepository postRepository) {
         this.profileRepository = profileRepository;
         this.postRepository = postRepository;
+    }
+    public void loadData(){
+        loadPostsfromFile(filepath);
+        loadProfilesFromFile(filepath);
     }
 
     public Profile createProfile(String username, String email){
@@ -266,5 +274,65 @@ public class SocialNetwork {
         }
 
     }
+
+
+    // Como vem os dados :
+    // Em caso de Post = TIPO;id;text;ownerId;createdDatatime
+    // Em caso de AdvancedPost = TIPO;id;text;owner;Id;createdDataTime;remainingViews;hashtags[hash1-hash2...]
+    public void loadPostsfromFile(String filepath){
+        List<String> lines = IOUtils.readLinesOnFile(filepath);
+        Stream<String> linesStream = lines.stream();
+        linesStream.forEach(line -> {
+            String[] data = line.split(";");
+            try{
+                switch (data[0]) {
+                    case "P":
+                        // incluindo o post segundo os dados do arquivo
+                        includePost(
+                            new Post(Integer.parseInt(data[1]), data[2], 
+                                findProfileById(Integer.parseInt(data[3])))
+                            );
+                        break;
+                
+                    case "AP":
+                        // Criando o post a ser adicionado
+                        AdvancedPost toBeAdded = new AdvancedPost(Integer.parseInt(data[1]), data[2], 
+                            findProfileById(Integer.parseInt(data[3])), Integer.parseInt(data[4]));
+                        
+                        // Pegando só as hashtags do arquivo
+                        String[] hashtags = data[5].split("-");
+
+                        // Adcionando as hashtags do arquivo ao perfil
+                        for(String hashtag : hashtags){
+                            toBeAdded.addHashtag(hashtag);
+                        }
+                        includePost(toBeAdded);
+                        break;
+                }
+            }
+            catch (NotFoundException e){
+                System.out.println("ERROR: user founded in file not related to any post");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    // Como vem os dados: id;name;email
+    public void loadProfilesFromFile(String filepath){
+        List<String> lines = IOUtils.readLinesOnFile(filepath);
+        Stream<String> linesStream = lines.stream();
+        linesStream.forEach(line -> {
+            String[] data = line.split(";");
+            try{
+                includeProfile(new Profile(Integer.parseInt(data[0]), data[1], data[2]));
+                
+            }catch(AlreadyExistsException e){
+                System.err.println("ERROR: Conflict with existing user in memory and in file");
+                e.printStackTrace();
+            }
+        });
+
+    }
+
 }
 

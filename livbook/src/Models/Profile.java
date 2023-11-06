@@ -33,7 +33,7 @@ public class Profile {
 
     @Override
     public String toString() {
-        return String.format("@%s : %s ", getName(), getEmail());
+        return String.format("%s : %s ", getName(), getEmail());
     }
 
 }
