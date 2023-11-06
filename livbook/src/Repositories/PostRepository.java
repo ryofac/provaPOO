@@ -40,6 +40,10 @@ public class PostRepository {
 
     }
 
+    public void removePostsFromUser(Profile profile) {
+        posts.removeIf(post -> post.getOwner().equals(profile));
+    }
+
     public Optional<Post> findPostById(Integer id) {
         Stream<Post> postsStream = posts.stream();
         Stream<Post> postsFinded = postsStream.filter(post -> post.getId() == id);

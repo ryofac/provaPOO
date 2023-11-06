@@ -34,12 +34,10 @@ public class App {
     private class Option {
         String title; // Nome que será mostrado
         Consumer<Object> callback; // função que será chamada pela opcao
-        Boolean canShow; // define se pode ser mostrada ou não
 
-        Option(String title, Consumer<Object> callback, Boolean canShow) {
+        Option(String title, Consumer<Object> callback) {
             this.title = title;
             this.callback = callback;
-            this.canShow = canShow;
         }
 
         @Override
@@ -52,34 +50,37 @@ public class App {
     private Option[] options = {
             new Option("Create profile", none -> {
                 includeProfile();
-            }, true),
+            }),
             new Option("Create Post", none -> {
                 createPost();
-            }, true),
+            }),
             new Option("Show Feed", none -> {
                 showAllPosts();
-            }, true),
+            }),
+            new Option("Show users", none -> {
+                socialNetwork.showAllProfiles();
+            }),
             new Option("Search Profile", none -> {
                 searchProfile();
-            }, true),
+            }),
             new Option("Search Post", none -> {
                 searchPost();
-            }, true),
+            }),
             new Option("Like Post", none -> {
                 likePost();
-            }, true),
+            }),
             new Option("Dislike Post", none -> {
                 dislikePost();
-            }, true),
+            }),
             new Option("Delete Post", none -> {
                 deletePost();
-            }, true),
-            new Option("Exit", none -> {
-                System.out.println("Bye!");
-            }, true),
-            // new Option("Show Popular Posts", none -> {
-            // showPopularPosts();
-            // }, true),
+            }),
+            new Option("Delete Profile", none -> {
+                removeProfile();
+            }),
+            new Option("Show Popular Advanced Posts", none -> {
+                showPopularAPosts();
+            }),
 
     };
 
@@ -88,10 +89,14 @@ public class App {
         Integer optionNumber = 0;
         System.out.println(title);
         for (Option option : options) {
-            if (option.canShow) {
-                System.out.println(String.format("+%d - %s", ++optionNumber, option));
-            }
+            System.out.println(ConsoleColors.YELLOW_BRIGHT + "+> " + ConsoleColors.GREEN + ++optionNumber + "-" + option
+                    + ConsoleColors.RESET);
         }
+        System.out.println(String.format(ConsoleColors.RED_BRIGHT + "+> %d - %s", 0, "Exit" + ConsoleColors.RESET));
+    }
+
+    private void showPopularAPosts() {
+        socialNetwork.showPopularAPosts();
     }
 
     private void deletePost() {
@@ -111,7 +116,7 @@ public class App {
             socialNetwork.includeProfile(socialNetwork.createProfile(name, email));
             System.out.println("User created!");
         } catch (AlreadyExistsException e) {
-            System.out.println("CANNOT CREATE USER: " + e.getMessage());
+            System.out.println(ConsoleColors.RED + "CANNOT CREATE USER: " + e.getMessage() + ConsoleColors.RESET);
             return;
         } catch (Exception e) {
             System.out.println("Ocorreu um erro...");
@@ -129,11 +134,20 @@ public class App {
                 Profile foundedbyUsername = socialNetwork.findProfileByName(searchTerm);
                 System.out.println("Founded: " + foundedbyUsername);
             } catch (NotFoundException err) {
-                System.out.println("User not founded!");
+                System.out.println(ConsoleColors.RED + "User not founded!" + ConsoleColors.RESET);
             }
 
         }
 
+    }
+
+    private void removeProfile() {
+        socialNetwork.showAllProfiles();
+        System.out.println(
+                ConsoleColors.RED + "The posts related to that person will be removed too!" + ConsoleColors.RESET);
+        Integer id = IOUtils.getInt("Enter the id: ");
+        socialNetwork.removeProfile(id);
+        System.out.println("Profile removed!");
     }
 
     private void showAllPosts() {
@@ -170,22 +184,22 @@ public class App {
             Profile foundedByEmail = socialNetwork.findProfileByEmail(email);
             Profile foundedByName = socialNetwork.findProfileByName(name);
             if (foundedByEmail != foundedByName) {
-                System.out.println("Autentication failed!");
+                System.out.println(ConsoleColors.RED + "Autentication failed!" + ConsoleColors.RESET);
                 return;
             }
-            String text = IOUtils.getTextNormalized("What do you want to share with world today? \n > ");
+            String text = IOUtils.getText("What do you want to share with world today? >_<\n > ").replace(";", "*");
+
             List<String> hashtagsFounded = findHashtagInText(text);
             if (hashtagsFounded.size() > 0)
-                System.out.println("Warn: you can only embed hashtags in a advanced post");
+                System.out.println(ConsoleColors.YELLOW
+                        + "Warn: you can only embed hashtags in a advanced post" + ConsoleColors.RESET);
             Boolean isAdvanced = IOUtils.getChoice("Do you want to turn this into a advanced post? ");
-
             Post created;
             if (isAdvanced) {
                 Integer remainingViews = IOUtils.getInt("Set the max views: ");
                 created = socialNetwork.createAdvancedPost(text, foundedByEmail, remainingViews);
             } else {
                 created = socialNetwork.createPost(text, foundedByEmail);
-                //
 
             }
             // hashtags vão ser adcionadas a medida que são encontradas no próprio texto
@@ -194,7 +208,8 @@ public class App {
                     ((AdvancedPost) created).addHashtag(hashtag);
                 } else {
                     text = text.replace(hashtag, " ");
-                    System.out.println("Hashtag " + hashtag + " removed: you have to create an advanced post");
+                    System.out.println(ConsoleColors.RED + "Hashtag " + hashtag
+                            + " removed: you have to create an advanced post" + ConsoleColors.RESET);
                 }
 
             }
@@ -273,7 +288,7 @@ public class App {
                 options[chosen - 1].callback.accept(null);
                 socialNetwork.saveData(PROFILE_PATH, POST_PATH);
             } catch (NumberFormatException e) {
-                System.out.println("Enter only numbers, please!");
+                System.out.println(ConsoleColors.RED + "Enter only numbers, please!" + ConsoleColors.RESET);
             }
 
             IOUtils.clearScreen();

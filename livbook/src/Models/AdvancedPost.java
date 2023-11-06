@@ -1,5 +1,6 @@
 package Models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class AdvancedPost extends Post {
@@ -8,6 +9,13 @@ public class AdvancedPost extends Post {
 
     public AdvancedPost(Integer _id, String _text, Profile _owner, Integer remainingViews) {
         super(_id, _text, _owner);
+        this.remainingViews = remainingViews;
+
+    }
+
+    public AdvancedPost(Integer _id, String _text, Profile _owner, Integer likes, Integer dislikes,
+            LocalDateTime createdDataTime, Integer remainingViews) {
+        super(_id, _text, _owner, createdDataTime, likes, dislikes);
         this.remainingViews = remainingViews;
 
     }
@@ -45,6 +53,7 @@ public class AdvancedPost extends Post {
         return remainingViews > 0;
     }
 
+    // TIPO;ID;TEXTO;IDODONO;TIME;LIKES;DISLIKES;REAMAININGVIEWS;HASHTAGS
     @Override
     public String toString() {
         String out = super.toString();

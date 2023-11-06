@@ -14,7 +14,7 @@ public class IOUtils {
 
     // Método para obter uma string passando uma mensagem, que também é uma string
     static public String getText(String msg) {
-        System.out.print(msg);
+        System.out.print(ConsoleColors.YELLOW_UNDERLINED + msg + ConsoleColors.RESET);
         String input = scanner.next().trim();
         return input;
     }
@@ -34,7 +34,7 @@ public class IOUtils {
 
     // Método para obter um inteiro passando uma mensagem que é uma string
     static public Integer getInt(String msg) throws NumberFormatException {
-        System.out.print(msg);
+        System.out.print(ConsoleColors.GREEN + msg + ConsoleColors.RESET);
         String input = scanner.next().trim();
         return Integer.parseInt(input);
 

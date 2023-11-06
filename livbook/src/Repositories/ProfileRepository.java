@@ -1,9 +1,11 @@
 package Repositories;
 
+import java.io.NotActiveException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import Exceptions.NotFoundException;
 import Models.Post;
 import Models.Profile;
 import Utils.IOUtils;
@@ -25,6 +27,15 @@ public class ProfileRepository {
 
     public Integer getProfileAmount() {
         return profiles.size();
+    }
+
+    public void removeProfile(Integer profileId) throws NotFoundException {
+        var founded = findProfileById(profileId);
+        if (founded.isEmpty()) {
+            throw new NotFoundException("No profile found!");
+        }
+        profiles.remove(founded.get());
+
     }
 
     public Optional<Profile> findProfileById(Integer id) {

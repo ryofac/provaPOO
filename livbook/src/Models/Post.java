@@ -17,6 +17,15 @@ public class Post {
         this._createdTime = LocalDateTime.now();
     }
 
+    public Post(Integer _id, String _text, Profile _owner, LocalDateTime createdTime, Integer likes, Integer dislikes) {
+        this._id = _id;
+        this._text = _text;
+        this._owner = _owner;
+        this._createdTime = createdTime;
+        this._likes = likes;
+        this._dislikes = dislikes;
+    }
+
     public Boolean isPopular() {
         // Returns true if the like amount is greatear than 50 % of dislikes
         return this._likes > (50 / 100 * this._dislikes);
@@ -59,12 +68,14 @@ public class Post {
     }
 
     // Usado para facilitar a gravação em arquivo:
+
+    // TIPO;ID;TEXTO;IDODONO;TIME;LIKES;DISLIKES
     @Override
     public String toString() {
-        if (this instanceof AdvancedPost) {
-            return String.format("%s;%d;%s;%d;%s", "AP", getId(), getText(), getOwner().getId(), getCreatedTime());
-        }
-        return String.format("%s;%d;%s;%d;%s", "P", getId(), getText(), getOwner().getId(), getCreatedTime());
+        String type = this instanceof AdvancedPost ? "AP" : "P";
+
+        return String.format("%s;%d;%s;%d;%s;%d;%d", type, getId(), getText(), getOwner().getId(), getCreatedTime(),
+                getLikes(), getDislikes());
 
     }
 

@@ -2,6 +2,8 @@ import Repositories.ProfileRepository;
 import Utils.ConsoleColors;
 import Utils.IOUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -45,8 +47,22 @@ public class SocialNetwork {
     }
 
     public AdvancedPost createAdvancedPost(String text, Profile owner, Integer remainingViews) {
-        Integer id = postRepository.getPostAmount() + 1;
+        if (postRepository.getAllPosts().isEmpty()) {
+            return new AdvancedPost(1, text, owner, remainingViews);
+        }
+        Integer id = postRepository.getAllPosts().getLast().getId() + 1;
         return new AdvancedPost(id, text, owner, remainingViews);
+
+    }
+
+    public void removeProfile(Integer id) {
+        try {
+            var foundedById = profileRepository.findProfileById(id).get();
+            postRepository.removePostsFromUser(foundedById);
+            profileRepository.removeProfile(id);
+        } catch (NotFoundException e) {
+            System.out.println(e.getMessage());
+        }
 
     }
 
@@ -138,6 +154,14 @@ public class SocialNetwork {
         }
     }
 
+    public String formatProfile(Profile profile) {
+        String formated = String.format("""
+                ===================================
+                        <ID: %d> @%s : %s
+                ===================================""", profile.getId(), profile.getName(), profile.getEmail());
+        return formated;
+    }
+
     // Usado para formatar os posts no formato adequado
     public String formatPost(Post post) {
         String postText = post.getText();
@@ -158,7 +182,9 @@ public class SocialNetwork {
                 post.getId(), post.getOwner().getName(),
                 post.getCreatedTime().format(DateTimeFormatter.ofPattern("dd/MM (EE): HH:mm")),
                 postText, post.getLikes(), post.getDislikes());
-
+        if (post.isPopular()) {
+            formated += ConsoleColors.YELLOW_BRIGHT + "\t< ✦POPULAR✦ >\n" + ConsoleColors.RESET;
+        }
         if (post instanceof AdvancedPost) {
             formated += String.format("(%d - views remaining)\n hashtags:", ((AdvancedPost) post).getRemainingViews());
             for (String hashtag : ((AdvancedPost) post).getHashtags()) {
@@ -167,6 +193,23 @@ public class SocialNetwork {
         }
         formated += "\n"; // mais espaço no fim
         return formated;
+    }
+
+    public void showPopularAPosts() {
+        System.out.println("====== Popular Avanced Posts: =======");
+        for (Post post : postRepository.getAllPosts()) {
+            if (post instanceof AdvancedPost && post.isPopular()) {
+                System.out.println(formatPost(post));
+            }
+        }
+        viewPosts();
+    }
+
+    public void showAllProfiles() {
+        System.out.println("================ PROFILES ===============");
+        for (Profile profile : profileRepository.getAllProfiles()) {
+            System.out.println(formatProfile(profile));
+        }
     }
 
     public void decrementViews(Integer idPost) throws NotFoundException {
@@ -291,9 +334,9 @@ public class SocialNetwork {
     }
 
     // Como vem os dados :
-    // Em caso de Post = TIPO;id;text;ownerId;createdDatatime
-    // Em caso de AdvancedPost =
-    // TIPO;id;text;ownerId;createdDataTime;remainingViews;hashtags[hash1-hash2...]
+    // Post = TIPO;ID;TEXTO;IDODONO;TIME;LIKES;DISLIKES
+    // AdvancedPost =
+    // TIPO;ID;TEXTO;IDODONO;TIME;LIKES;DISLIKES;REAMAININGVIEWS;HASHTAGS
     public void loadPostsfromFile(String filepath) {
         List<String> lines = IOUtils.readLinesOnFile(filepath);
         Stream<String> linesStream = lines.stream();
@@ -305,16 +348,17 @@ public class SocialNetwork {
                         // incluindo o post segundo os dados do arquivo
                         includePost(
                                 new Post(Integer.parseInt(data[1]), data[2],
-                                        findProfileById(Integer.parseInt(data[3]))));
+                                        findProfileById(Integer.parseInt(data[3])), LocalDateTime.parse(data[4]),
+                                        Integer.parseInt(data[5]), Integer.parseInt(data[6])));
                         break;
 
                     case "AP":
                         // Criando o post a ser adicionado
                         AdvancedPost toBeAdded = new AdvancedPost(Integer.parseInt(data[1]), data[2],
-                                findProfileById(Integer.parseInt(data[3])), Integer.parseInt(data[5]));
-
+                                findProfileById(Integer.parseInt(data[3])), Integer.parseInt(data[5]),
+                                Integer.parseInt(data[6]), LocalDateTime.parse(data[4]), Integer.parseInt(data[7]));
                         // Pegando só as hashtags do arquivo
-                        String[] hashtags = data[6].split("-");
+                        String[] hashtags = data[8].split("-");
 
                         // Adcionando as hashtags do arquivo ao perfil
                         for (String hashtag : hashtags) {
