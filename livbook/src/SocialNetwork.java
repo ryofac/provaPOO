@@ -19,12 +19,14 @@ public class SocialNetwork {
     }
 
     public Profile createProfile(String username, String email){
-        Integer id = profileRepository.getProfileAmount() + 1;
+        // O id sempre vai ser o id do último da lista + 1
+        Integer id = profileRepository.getAllProfiles().getLast().getId() + 1;
         return new Profile(id, username, email);
     }
     
     public Post createPost(String text, Profile owner){
-        Integer id = postRepository.getPostAmount() + 1;
+        // O id sempre vai ser o id do último da lista + 1
+        Integer id = postRepository.getAllPosts().getLast().getId() + 1;
         return new Post(id, text, owner);
 
     }
